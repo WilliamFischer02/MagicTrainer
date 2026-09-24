@@ -12,10 +12,12 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Verify the scaffold builds on Windows (`npm run tauri dev`) — verified 2026-09-24: `cargo check` 60 s, dev window opened (Rust 1.97.1, Node 24, WebView2 153)
 
 ## Phase 1 — Data spine (target: 1–2 unattended sessions)
-- [ ] Rust command: download Scryfall bulk (oracle-cards, rulings, oracle-tags) with progress; stream JSONL.gz → SQLite; schema + migrations; FTS5 name index
+- [x] Rust command: download Scryfall bulk (oracle-cards, rulings, oracle-tags) with progress; stream JSONL.gz → SQLite; schema + migrations; FTS5 name index — `import_bulk` + `magictrainer-import` CLI; 38,690 cards / 236k taggings / 79k rulings in 27 s (debug)
 - [x] Card resolver (exact → normalized → fuzzy with confidence; DFC/split/adventure names) — `core/resolve/`, 51 tests
-- [ ] `data/` TS layer + TanStack Query hooks; card image disk cache with Scryfall rate limiting (≤10 rps, User-Agent)
-- [ ] Commander Spellbook bulk variants import + `find-my-combos` client with on-disk cache
+- [x] `data/` TS layer (DbClient, card queries with Zod, NameIndex loader, deck resolution) — six sample decks resolve with 0 unresolved
+- [ ] TanStack Query hooks; card image disk cache with Scryfall rate limiting (≤10 rps, User-Agent)
+- [x] Commander Spellbook bulk variants import (streaming visitor, D-011)
+- [ ] `find-my-combos` client with on-disk cache (default path per Q-013)
 - [ ] Board rendering spike: PixiJS vs SVG+Motion — record in DECISIONS.md with measured fps
 - [ ] Design tokens + typography + "arcane table" theme; app shell (nav, mode switch, settings)
 

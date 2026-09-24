@@ -37,3 +37,8 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# ---- local card DB (built by magictrainer-import; never commit) ----
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal

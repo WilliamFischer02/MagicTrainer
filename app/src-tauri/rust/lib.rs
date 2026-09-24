@@ -1,14 +1,36 @@
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+//! MagicTrainer Rust side. Sources live in `rust/` (see Cargo.toml). Modules:
+//! - `normalize`  card-name normalization (golden-tested against the TS twin)
+//! - `db`         SQLite open/migrate/meta
+//! - `import`     streaming bulk importers (Scryfall JSONL.gz, Spellbook variants)
+//! - `download`   bulk downloads with progress
+//! - `commands`   the Tauri command surface
+
+pub mod commands;
+pub mod db;
+pub mod download;
+pub mod error;
+pub mod import;
+pub mod normalize;
+pub mod progress;
+
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .plugin(tauri_plugin_dialog::init())
+        .setup(|app| {
+            let state = commands::AppState::from_app(app.handle())?;
+            app.manage(state);
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![
+            commands::db_status,
+            commands::db_query,
+            commands::import_bulk,
+            commands::scryfall_bulk_index,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

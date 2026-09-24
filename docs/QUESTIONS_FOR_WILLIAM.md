@@ -22,6 +22,7 @@ the date and update any `// Q-###` markers.
 ### Data & scope
 - **Q-007 · Formats to enforce in v1.** Commander + Modern only (William's decks) or all Scryfall formats? **Provisional: legality for all Scryfall formats is free; deck-size/singleton validation for Commander, Modern, Standard, Pioneer, Legacy, Vintage, Pauper.**
 - **Q-008 · Should the app manage the ManaBox collection (edit quantities) or stay read-only?** **Provisional: read-only import in v1; ManaBox stays the source of truth.**
+- **Q-013 · First-run download size.** Commander Spellbook's bulk `variants.json.gz` measured **664 MB** on 2026-09-24 (plus ~110 MB Scryfall). Options: A) download everything on first run with a size warning, B) Scryfall only by default and offer combos as an opt-in second step, C) query Spellbook `find-my-combos` per deck online and never download the bulk. **Provisional: B** — bulk combos are opt-in from Settings; per-deck online lookup (C) as the default when online, cached 24 h.
 - **Q-009 · Commander brackets / Game Changers.** Show WotC bracket estimate for Commander decks (using Scryfall `game_changer` + Spellbook bracket buckets)? **Provisional: yes, labeled "estimate".**
 
 ### Engineering

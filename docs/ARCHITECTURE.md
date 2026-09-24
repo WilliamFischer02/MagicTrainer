@@ -8,7 +8,7 @@
 | State | **Zustand** (app state) + **TanStack Query** (async data) | Small, testable, no boilerplate |
 | Board rendering | **PixiJS 8** in a canvas beneath a React HUD (Phase 1 spike also evaluates SVG + Framer Motion) | GPU-accelerated arrows/particles at 60 fps; React for panels/text |
 | Deck-graph view | **@xyflow/react** (React Flow) | Node/edge graph of card relationships in Deck Builder |
-| Local DB | **SQLite** via `tauri-plugin-sql` (rusqlite) | Card DB from Scryfall JSONL; FTS5 for name search; offline-first |
+| Local DB | **SQLite** via `rusqlite` in Rust; frontend reads through a read-only `db_query` command (D-009) | Card DB from Scryfall JSONL; FTS5 for autocomplete; in-memory NameIndex for resolution (D-010); offline-first |
 | Validation | **Zod** | Every import/JSON boundary |
 | Parsing | **PapaParse** (CSV) + hand-written decklist grammar | |
 | Tests | **Vitest** (unit, core), **Playwright** (E2E on the built app, later), Rust `cargo test` | |
@@ -26,11 +26,11 @@ app/
       trajectory/    # playline templates → TrajectoryStep[]; Spellbook description → steps
       opponent/      # track schema (zod) + loader          (to do)
       math/          # hypergeometric, curve stats           (to do)
-    data/            # card DB access layer over tauri-plugin-sql; Scryfall/Spellbook clients (to do)
+    data/            # DbClient interface + SQL queries + row→CardOracle mapping (Zod); NameIndex loader
     ui/              # React: screens, HUD, panels, design tokens                          (to do)
     board/           # PixiJS scene: zones, card sprites, arrow/pulse renderers, timeline  (to do)
-    bridge/          # Tauri invoke wrappers (fs, dialog, http, store)                     (to do)
-  src-tauri/         # Rust crate. Sources are in src-tauri/rust/ (NOT src/ — Cargo paths set in Cargo.toml) — commands (bulk import → SQLite, image cache), plugins, capabilities
+    bridge/          # Tauri invoke wrappers: TauriDb (db_query), bulk import + progress events
+  src-tauri/         # Rust crate. Sources in src-tauri/rust/ (NOT src/): normalize, db (schema v1), import/{scryfall,spellbook} streaming, download, commands; bin/import.rs dev CLI
 knowledge/           # read-only reference pack (rules, API docs, strategy, dev docs)
 opponent-tracks/     # JSON tracks
 data/                # samples committed; bulk data gitignored
