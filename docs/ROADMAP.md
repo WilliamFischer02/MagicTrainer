@@ -18,7 +18,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [ ] TanStack Query hooks; card image disk cache with Scryfall rate limiting (≤10 rps, User-Agent)
 - [x] Commander Spellbook bulk variants import (streaming visitor, D-011)
 - [ ] `find-my-combos` client with on-disk cache (default path per Q-013)
-- [ ] Board rendering spike: PixiJS vs SVG+Motion — record in DECISIONS.md with measured fps
+- [x] Board rendering spike: PixiJS vs SVG+Motion — D-006 resolved: React DOM + SVG + Motion (both 60 fps at 10× load in WebView2)
 - [ ] Design tokens + typography + "arcane table" theme; app shell (nav, mode switch, settings)
 
 ## Phase 2 — Deck Builder MVP

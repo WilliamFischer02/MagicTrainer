@@ -6,7 +6,7 @@
 | Shell | **Tauri 2** (Rust) | Native Windows binary, tiny footprint, WebView2 rendering, MSI/NSIS bundling; same stack as William's StackAssembler → shared know-how |
 | UI | **React 19 + TypeScript + Vite** | William's established toolchain |
 | State | **Zustand** (app state) + **TanStack Query** (async data) | Small, testable, no boilerplate |
-| Board rendering | **PixiJS 8** in a canvas beneath a React HUD (Phase 1 spike also evaluates SVG + Framer Motion) | GPU-accelerated arrows/particles at 60 fps; React for panels/text |
+| Board rendering | **React DOM + SVG overlay, animated with Motion** (D-006 resolved 2026-09-24; PixiJS spike kept under `app/src/spike/`) | 60 fps at 10× the spec load in WebView2; crisp at any DPR; native text, hit-testing, a11y |
 | Deck-graph view | **@xyflow/react** (React Flow) | Node/edge graph of card relationships in Deck Builder |
 | Local DB | **SQLite** via `rusqlite` in Rust; frontend reads through a read-only `db_query` command (D-009) | Card DB from Scryfall JSONL; FTS5 for autocomplete; in-memory NameIndex for resolution (D-010); offline-first |
 | Validation | **Zod** | Every import/JSON boundary |
@@ -28,7 +28,7 @@ app/
       math/          # hypergeometric, curve stats           (to do)
     data/            # DbClient interface + SQL queries + row→CardOracle mapping (Zod); NameIndex loader
     ui/              # React: screens, HUD, panels, design tokens                          (to do)
-    board/           # PixiJS scene: zones, card sprites, arrow/pulse renderers, timeline  (to do)
+    board/           # React board: zones, card elements (art crops), SVG arrow/pulse overlay, timeline (to do)
     bridge/          # Tauri invoke wrappers: TauriDb (db_query), bulk import + progress events
   src-tauri/         # Rust crate. Sources in src-tauri/rust/ (NOT src/): normalize, db (schema v1), import/{scryfall,spellbook} streaming, download, commands; bin/import.rs dev CLI
 knowledge/           # read-only reference pack (rules, API docs, strategy, dev docs)

@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "MagicTrainer — MTG deck strategy visualizer and trainer"
 authors = ["William Fischer <Goob Entertainment Co.>"]
 edition = "2021"
+default-run = "magictrainer"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

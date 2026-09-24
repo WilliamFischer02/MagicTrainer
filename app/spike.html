@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MagicTrainer board spike</title>
+    <style>
+      html, body { margin: 0; background: #101418; color: #e9dfc7; font: 13px/1.4 "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; overflow: hidden; }
+      #stage { position: relative; width: 1440px; height: 900px; overflow: hidden; background: #101418; }
+      #hud { position: fixed; top: 8px; right: 8px; background: rgba(26,32,40,.92); border: 1px solid #c9a227; padding: 8px 12px; border-radius: 6px; white-space: pre; font-family: Consolas, monospace; z-index: 10; }
+      #nav { position: fixed; bottom: 8px; left: 8px; z-index: 10; display: flex; gap: 8px; }
+      #nav a { color: #c9a227; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <div id="hud">spike starting…</div>
+    <div id="nav">
+      <a href="?mode=pixi&dpr=1">pixi dpr1</a><a href="?mode=pixi&dpr=2">pixi dpr2</a>
+      <a href="?mode=svg&dpr=1">svg dpr1</a><a href="?mode=svg&dpr=2">svg dpr2</a>
+    </div>
+    <script type="module" src="/src/spike/main.tsx"></script>
+  </body>
+</html>

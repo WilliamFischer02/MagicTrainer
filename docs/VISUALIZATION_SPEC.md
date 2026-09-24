@@ -33,4 +33,4 @@ Title (action), cards involved, cost ledger (mana, cards), consequence, **why** 
 `prefers-reduced-motion` → instant moves + highlighted trails; all HUD text ≥ 12 px with 4.5:1 contrast; every control keyboard-reachable.
 
 ## Rendering decision
-Phase 1 spike compares PixiJS 8 (canvas) vs SVG + Framer Motion. Acceptance: 150 sprites + 40 arrows at 60 fps on a mid-range laptop at 1440×900, crisp at DPR 2. Record in DECISIONS.md D-006.
+Resolved 2026-09-24 (D-006): React DOM + SVG overlay animated with Motion. Both candidates hit 60 fps at 10× the acceptance load (150 sprites + 40 arrows, DPR 2) in WebView2; DOM wins on crispness, native text/hit-testing/a11y and reduced-motion support. Spike harness: `app/spike.html`.
