@@ -140,24 +140,28 @@ impl<R: Read> Read for CountingReader<R> {
     }
 }
 
-/// Open a `.gz` file as a buffered line reader plus (compressed bytes read, total bytes).
+/// Open a bulk file as a buffered line reader plus (bytes read, total bytes). Gzip is
+/// detected by magic bytes, so a file that a downloader already inflated (PowerShell's
+/// `Invoke-WebRequest` honours `Content-Encoding: gzip` and writes plain JSON under a `.gz`
+/// name) still imports.
 pub fn open_gz_lines(path: &Path) -> Result<(Box<dyn BufRead + Send>, Arc<AtomicU64>, u64)> {
-    let file = File::open(path)?;
-    let total = file.metadata()?.len();
-    let read = Arc::new(AtomicU64::new(0));
-    let counting = CountingReader { inner: BufReader::with_capacity(1 << 20, file), read: read.clone() };
-    let decoder = MultiGzDecoder::new(counting);
-    Ok((Box::new(BufReader::with_capacity(1 << 20, decoder)), read, total))
+    let (reader, read, total) = open_gz_reader(path)?;
+    Ok((Box::new(BufReader::with_capacity(1 << 20, reader)), read, total))
 }
 
-/// Same as `open_gz_lines` but returns a raw reader (for serde streaming of one big JSON document).
+/// Raw byte reader over a possibly-gzipped file (for serde streaming of one big JSON document).
 pub fn open_gz_reader(path: &Path) -> Result<(Box<dyn Read + Send>, Arc<AtomicU64>, u64)> {
     let file = File::open(path)?;
     let total = file.metadata()?.len();
     let read = Arc::new(AtomicU64::new(0));
-    let counting = CountingReader { inner: BufReader::with_capacity(1 << 20, file), read: read.clone() };
-    let decoder = MultiGzDecoder::new(counting);
-    Ok((Box::new(BufReader::with_capacity(1 << 20, decoder)), read, total))
+    let mut buffered = BufReader::with_capacity(1 << 20, file);
+    let is_gzip = matches!(buffered.fill_buf()?, [0x1f, 0x8b, ..]);
+    let counting = CountingReader { inner: buffered, read: read.clone() };
+    if is_gzip {
+        Ok((Box::new(MultiGzDecoder::new(counting)), read, total))
+    } else {
+        Ok((Box::new(counting), read, total))
+    }
 }
 
 pub(crate) fn json_or_empty_array<T: serde::Serialize>(v: &[T]) -> String {

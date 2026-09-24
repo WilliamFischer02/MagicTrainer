@@ -11,7 +11,9 @@ if (-not $Dest) { $Dest = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.
 $Dest = [System.IO.Path]::GetFullPath($Dest)
 trap { Write-Host "FAILED: $_" -ForegroundColor Red; exit 1 }
 $ua = "MagicTrainer/0.1 (github.com/WilliamFischer02/MagicTrainer)"
-$hdr = @{ "User-Agent" = $ua; "Accept" = "application/json" }
+# Accept-Encoding: identity asks servers not to gzip-encode; Invoke-WebRequest would inflate it
+# transparently and leave plain JSON under a .gz name (the Rust importer sniffs and accepts both).
+$hdr = @{ "User-Agent" = $ua; "Accept" = "application/json"; "Accept-Encoding" = "identity" }
 New-Item -ItemType Directory -Force -Path "$Dest\scryfall","$Dest\spellbook","$Dest\mtgjson" | Out-Null
 $manifest = @{ retrieved = (Get-Date -Format s); files = @() }
 function Get($url, $out) {
