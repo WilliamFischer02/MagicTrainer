@@ -11,7 +11,12 @@ import type { CardOracle } from "../types";
  * than misses because the Trainer will animate whatever we claim.
  *
  * Tag slugs come from knowledge/mtg-data-apis/oracle-tag-index.json (4,559 tags, 2026-09-24).
- * Verify a slug exists there before adding it here.
+ * `__tests__/patterns.test.ts` fails the build if a slug is not in that index. Note that the
+ * data layer expands a card's tags with every ANCESTOR tag (oracle_tag_ancestors), so a parent
+ * slug such as `recursion` (0 direct taggings, 96 children) matches any card tagged with a child.
+ * Verified 2026-09-24 against the imported bulk: 12 of the original 44 slugs did not exist
+ * (aristocrat, blood-artist, creature-tokens, death-trigger-other, looting, prowess, reanimation,
+ * recursive-creature, rummaging, self-mill, soul-sister, undying) and were replaced or dropped.
  */
 
 export interface RoleDef {
@@ -68,7 +73,7 @@ export const PATTERNS: PatternDef[] = [
         label: "Death-trigger payoff",
         min: 1,
         weight: 3,
-        tags: ["death-trigger-other", "aristocrat", "blood-artist"],
+        tags: ["blood-artist-ability"],
         text: txt(/whenever (a|another) creature (you control )?dies,/, /whenever .* dies, (each opponent|target player) loses/),
       },
       {
@@ -76,15 +81,15 @@ export const PATTERNS: PatternDef[] = [
         label: "Recurring/token fodder",
         min: 2,
         weight: 1,
-        tags: ["repeatable-creature-tokens", "recursive-creature", "creature-tokens", "undying", "persist"],
-        text: txt(/create .* creature token/, /return .* from your graveyard to the battlefield/),
+        tags: ["repeatable-creature-tokens", "reanimate-self", "persist"],
+        text: txt(/create .* creature token/, /return .* from your graveyard to the battlefield/, /(undying|persist)/),
       },
       {
         id: "recursion",
         label: "Graveyard recursion",
         min: 1,
         weight: 1,
-        tags: ["reanimation", "mass-reanimation", "recursion", "regrowth"],
+        tags: ["reanimate-creature", "mass-reanimation", "recursion", "regrowth"],
         text: txt(/return (target )?creature card from your graveyard to (the battlefield|your hand)/),
       },
     ],
@@ -117,7 +122,7 @@ export const PATTERNS: PatternDef[] = [
         label: "Incidental lifegain to start the loop",
         min: 1,
         weight: 1,
-        tags: ["lifegain", "repeatable-lifegain", "soul-sister"],
+        tags: ["lifegain", "repeatable-lifegain", "soul-warden-ability"],
         text: txt(/you gain \d+ life/),
       },
     ],
@@ -135,7 +140,7 @@ export const PATTERNS: PatternDef[] = [
         label: "Reanimation spell/ability",
         min: 2,
         weight: 3,
-        tags: ["reanimation", "mass-reanimation"],
+        tags: ["reanimate-creature", "mass-reanimation", "reanimate-from-any"],
         text: txt(/return target creature card from (a|your) graveyard to the battlefield/),
       },
       {
@@ -143,7 +148,7 @@ export const PATTERNS: PatternDef[] = [
         label: "Graveyard filler (discard/mill/loot)",
         min: 2,
         weight: 2,
-        tags: ["looting", "self-mill", "rummaging", "discard-outlet"],
+        tags: ["loot", "repeatable-loot", "mill-self", "rummage", "repeatable-rummage", "discard-outlet"],
         text: txt(/discard (a|one or more|two) cards?/, /mill(s)? (\d+|that many) cards?/),
       },
       {
@@ -178,7 +183,7 @@ export const PATTERNS: PatternDef[] = [
     required: ["prowess", "spells"],
     playline: "prowess-turn",
     roles: [
-      { id: "prowess", label: "Prowess / cast-trigger creatures", min: 4, weight: 3, tags: ["prowess", "cast-trigger-you"], text: txt(/prowess/, /whenever you cast a noncreature spell/) },
+      { id: "prowess", label: "Prowess / cast-trigger creatures", min: 4, weight: 3, tags: ["cast-trigger-you"], text: txt(/prowess/, /whenever you cast a noncreature spell/) },
       { id: "spells", label: "Cheap instants/sorceries", min: 12, weight: 2, type: /instant|sorcery/i, custom: (c) => c.cmc <= 2 },
       { id: "burn", label: "Burn / reach", min: 4, weight: 1, tags: ["burn-any", "burn-player", "burn-creature"] },
     ],
@@ -202,7 +207,7 @@ export const PATTERNS: PatternDef[] = [
     summary: "Make many small creatures and win with anthems or mass pump.",
     required: ["tokens", "anthem"],
     roles: [
-      { id: "tokens", label: "Token makers", min: 6, weight: 3, tags: ["creature-tokens", "repeatable-creature-tokens"], text: txt(/create .* creature tokens?/) },
+      { id: "tokens", label: "Token makers", min: 6, weight: 3, tags: ["repeatable-creature-tokens"], text: txt(/create .* creature tokens?/) },
       { id: "anthem", label: "Anthems / mass pump", min: 2, weight: 3, tags: ["anthem", "power-boost-to-all"], text: txt(/creatures you control get \+\d+\/\+\d+/) },
     ],
   },
