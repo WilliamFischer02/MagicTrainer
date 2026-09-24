@@ -4,8 +4,12 @@
 .PARAMETER All   Also fetch Scryfall default-cards (~75 MB gz, every printing) - needed for collection->printing mapping.
 #>
 [CmdletBinding()]
-param([string]$Dest = (Join-Path $PSScriptRoot "..\data"), [switch]$All)
+param([string]$Dest = "", [switch]$All)
 $ErrorActionPreference = "Stop"
+# $PSScriptRoot is empty inside param() defaults on Windows PowerShell 5.1 - resolve here instead.
+if (-not $Dest) { $Dest = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "..\data" }
+$Dest = [System.IO.Path]::GetFullPath($Dest)
+trap { Write-Host "FAILED: $_" -ForegroundColor Red; exit 1 }
 $ua = "MagicTrainer/0.1 (github.com/WilliamFischer02/MagicTrainer)"
 $hdr = @{ "User-Agent" = $ua; "Accept" = "application/json" }
 New-Item -ItemType Directory -Force -Path "$Dest\scryfall","$Dest\spellbook","$Dest\mtgjson" | Out-Null
