@@ -228,9 +228,9 @@ function ReportView({ result }: { result: BulkImportResult }) {
                   {p.part}
                   {p.skipped ? ` — skipped: ${p.skipped}` : ""}
                 </td>
-                <td className="num">{p.skipped ? "" : formatCount(p.rows)}</td>
-                <td className="num">{p.skipped ? "" : formatCount(p.ignored)}</td>
-                <td className="num">{p.skipped ? "" : p.seconds.toFixed(1)}</td>
+                <td className={s.num}>{p.skipped ? "" : formatCount(p.rows)}</td>
+                <td className={s.num}>{p.skipped ? "" : formatCount(p.ignored)}</td>
+                <td className={s.num}>{p.skipped ? "" : p.seconds.toFixed(1)}</td>
               </tr>
             ))}
           </tbody>

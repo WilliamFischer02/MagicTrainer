@@ -109,12 +109,14 @@ export function RulesScreen() {
       )}
 
       {status.kind === "results" && status.hits.length > 0 && (
-        <div className={s.results} role="list" aria-label={`${status.hits.length} results`}>
+        <div className={s.results}>
+          <p className="sr-only" role="status">
+            {status.hits.length} results
+          </p>
           {status.hits.map((h) => (
             <button
               key={`${h.kind}:${h.number}`}
               type="button"
-              role="listitem"
               className={s.hit}
               aria-pressed={selected?.number === h.number && selected.kind === h.kind}
               onClick={() => setContext({ kind: "rule", entry: h })}

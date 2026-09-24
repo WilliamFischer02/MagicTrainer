@@ -33,11 +33,11 @@ export function AppShell() {
           </div>
         </div>
 
-        <div className={s.segment} role="group" aria-label="Mode">
-          <button type="button" className={s.segmentBtn} aria-pressed={mode === "builder"} onClick={() => setMode("builder")}>
+        <div className={s.segment} role="radiogroup" aria-label="Mode">
+          <button type="button" role="radio" className={s.segmentBtn} aria-checked={mode === "builder"} onClick={() => setMode("builder")}>
             <BuilderIcon width={16} height={16} /> Builder
           </button>
-          <button type="button" className={s.segmentBtn} aria-pressed={mode === "trainer"} onClick={() => setMode("trainer")}>
+          <button type="button" role="radio" className={s.segmentBtn} aria-checked={mode === "trainer"} onClick={() => setMode("trainer")}>
             <TrainerIcon width={16} height={16} /> Trainer
           </button>
         </div>
@@ -88,7 +88,7 @@ function DataPill() {
     text = cards > 0 ? `${formatCount(cards)} cards · ${formatCount(db.counts.spellbook_variants ?? 0)} combos` : "Card data empty — import";
   }
   return (
-    <button type="button" className={s.dataPill} onClick={() => navigate("settings")} title="Open data settings">
+    <button type="button" className={s.dataPill} onClick={() => navigate("settings")} aria-label={`Open data settings. ${text}`}>
       <span className={dot} aria-hidden="true" />
       <span>{text}</span>
     </button>

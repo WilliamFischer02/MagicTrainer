@@ -21,6 +21,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Board rendering spike: PixiJS vs SVG+Motion — D-006 resolved: React DOM + SVG + Motion (both 60 fps at 10× load in WebView2)
 - [x] Design tokens + typography + "arcane table" theme; app shell (nav, mode switch, settings) — `app/src/ui/`, rules viewer + data/settings screens live
 - [ ] Rules viewer: link rule citations in step notes (Phase 3 wiring); glossary cross-links
+- [ ] UI review minors (2026-09-24): fold DataScreen inline token styles into CSS modules; `--measure-*` tokens for 640/860/900 px widths; 2× DPI screenshot pass on a HiDPI display
 
 ## Phase 2 — Deck Builder MVP
 - [ ] Import UI (drag-drop, format auto-detect, error report, unresolved-name fixer with autocomplete)

@@ -18,7 +18,7 @@
   /* ink */
   --ink: #e9dfc7;
   --ink-2: rgba(233, 223, 199, 0.72);
-  --ink-3: rgba(233, 223, 199, 0.5);
+  --ink-3: rgba(233, 223, 199, 0.64); /* ≥ 4.5:1: 5.9 on panel, 6.3 on felt (was 4.1 / 4.3 at 0.5) */
   --ink-on-gold: #1a1406;
 
   /* accent + status */
@@ -87,6 +87,7 @@
   --context-w: 360px;
   --control-h: 36px;
   --control-h-sm: 28px;
+  --control-h-lg: 40px;
 
   /* card proportions (63:88) */
   --card-ratio: 63 / 88;
