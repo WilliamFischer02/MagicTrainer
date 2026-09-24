@@ -1,0 +1,20 @@
+// Mono-Green Modern — "Stompy" (green aggro).
+// format: modern | source: PLAYER-PROFILE_william.md (2026-07-03)
+Deck
+4 Pelt Collector
+4 Experiment One
+4 Burning-Tree Emissary
+2 Strangleroot Geist
+2 Avatar of the Resolute
+1 Scavenging Ooze
+4 Werewolf Pack Leader
+4 Steel Leaf Champion
+2 Old-Growth Troll
+3 Rancor
+3 Vines of Vastwood
+3 Aspect of Hydra
+2 Tenderize
+1 Burrog Barrage
+2 Titanic Growth
+1 Giant Growth
+18 Forest

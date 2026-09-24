@@ -1,0 +1,24 @@
+// Mono-Blue Affinity Modern — "Affinity" (artifact aggro). STATUS: DESIGNED, PURCHASES UNCONFIRMED.
+// format: modern | source: PLAYER-PROFILE_william.md (2026-07-03)
+Deck
+4 Ornithopter
+4 Memnite
+1 Hangarback Walker
+4 Signal Pest
+4 Frogmite
+3 Steel Overseer
+1 Etherium Sculptor
+1 Master of Etherium
+2 Myr Enforcer
+1 Chrome Host Seedshark
+1 Thought Monitor
+1 Kappa Cannoneer
+1 Cyberdrive Awakener
+3 Cranial Plating
+3 Springleaf Drum
+4 Thoughtcast
+1 Tezzeret's Gambit
+1 Thirst for Knowledge
+3 Negate
+4 Darksteel Citadel
+13 Island

@@ -1,0 +1,111 @@
+# Layouts and Faces
+
+The `layout` property categorizes the arrangement of card parts,
+faces, and other bounded regions on cards.
+The layout can be used to programmatically determine which other
+properties on a card you can expect.
+
+Specifically:
+
+* Cards with the layouts `split`, `flip`, `transform`, and `double_faced_token`
+  will always have a `card_faces` property describing the distinct faces.
+* Cards with the layout `meld` will always have an `all_parts`
+  property pointing to the other meld parts.
+
+Layout | Description | Examples || `normal` | A standard Magic card with one face | [Example Cards](/search?q=layout%3Anormal) |
+| `split` | A split-faced card | [Example Cards](/search?q=layout%3Asplit) |
+| `flip` | Cards that invert vertically with the flip keyword | [Example Cards](/search?q=layout%3Aflip) |
+| `transform` | Double-sided cards that transform | [Example Cards](/search?q=layout%3Atransform) |
+| `modal_dfc` | Double-sided cards that can be played either-side | [Example Cards](/search?q=layout%3Amodal_dfc) |
+| `meld` | Cards with meld parts printed on the back | [Example Cards](/search?q=layout%3Ameld) |
+| `leveler` | Cards with Level Up | [Example Cards](/search?q=layout%3Aleveler) |
+| `class` | Class-type enchantment cards | [Example Cards](/search?q=layout%3Aclass) |
+| `case` | Case-type enchantment cards | [Example Cards](/search?q=layout%3Acase) |
+| `saga` | Saga-type cards | [Example Cards](/search?q=layout%3Asaga) |
+| `adventure` | Cards with an Adventure spell part | [Example Cards](/search?q=layout%3Aadventure) |
+| `prepare` | Cards with a prepared spell part | [Example Cards](/search?q=layout%3Aprepare) |
+| `mutate` | Cards with Mutate | [Example Cards](/search?q=layout%3Amutate) |
+| `prototype` | Cards with Prototype | [Example Cards](/search?q=layout%3Aprototype) |
+| `battle` | Battle-type cards | [Example Cards](/search?q=layout%3Abattle) |
+| `planar` | Plane and Phenomenon-type cards | [Example Cards](/search?q=layout%3Aplanar) |
+| `scheme` | Scheme-type cards | [Example Cards](/search?q=layout%3Ascheme) |
+| `vanguard` | Vanguard-type cards | [Example Cards](/search?q=layout%3Avanguard) |
+| `token` | Token cards | [Example Cards](/search?q=layout%3Atoken) |
+| `double_faced_token` | Tokens with another token printed on the back | [Example Cards](/search?q=layout%3Adouble_faced_token) |
+| `emblem` | Emblem cards | [Example Cards](/search?q=layout%3Aemblem) |
+| `augment` | Cards with Augment | [Example Cards](/search?q=layout%3Aaugment) |
+| `host` | Host-type cards | [Example Cards](/search?q=layout%3Ahost) |
+| `art_series` | Art Series collectable double-faced cards | [Example Cards](/search?q=layout%3Aart_series) |
+| `reversible_card` | A Magic card with two sides that are unrelated | [Example Cards](/search?q=layout%3Areversible_card) |
+| `front_card` | A extra card that indicates a deck type | [Example Cards](/search?q=layout%3Afront_card) |
+
+## Card Faces
+
+Magic cards can include multiple faces on a single piece of card stock.
+Scryfall includes information about each of these card faces using the `card_faces`
+property on API objects. Please note the following types of multi-face cards
+and how Scryfall will describe them:
+
+**Split cards** *(Comp. rules term)* · [Example split cards](/search?q=is%3Asplit)  
+Split cards are sorceries or instant cards that include two faces
+and the caster can choose which face to cast.
+The back of a split card is the normal Magic back.
+
+GET
+
+https://api.scryfall.com/cards/0f279560-7e9f-4a6d-9fd6-6c8c6bd94a1b
+
+**Flip cards** *(Comp. rules term)* · [Example flip cards](/search?q=is%3Aflip)  
+Flip cards have two parts of a permanent printed vertically on one side of the card.
+During play, an ability on the card causes the permanent to flip (rotate 180°) to the other side.
+The back of a flip card is the normal Magic back.
+
+GET
+
+https://api.scryfall.com/cards/0b61d772-2d8b-4acf-9dd2-b2e8b03538c8
+
+**Double-faced cards** *(Comp. rules term)*  
+These cards have two faces on different sides of the cardstock that are related to each other.
+The whole card is a single legal or deckbuilding object.
+Double-faced cards can either be transforming or modal.
+
+**Transforming double-faced cards** *(Comp. rules term)* · [Example transforming DFCs](/search?q=is%3Atransform)  
+These cards can either transform after entering the battlefield, or can be put onto the battlefield already transformed.
+Scryfall will use the `card_faces` object to describe the two different transformed modes of the card,
+while the root object will contain data that applies to both sides.
+These cards have their `layout` field set to `"transform"`.
+
+GET
+
+https://api.scryfall.com/cards/b37aa12c-a6b3-4cf8-b5a4-0a999ff12d02
+
+**Modal double-faced cards** *(Comp. rules term)* · [Example modal DFCs](/search?q=is%3Amodaldfc)  
+Modal DFCs be cast or played as either half of the card.
+Scryfall will use the `card_faces` object to describe the two different modes of the card,
+while the root object will contain data that applies to both sides (such as the `color_identity`).
+These cards have their `layout` field set to `"modal_dfc"`.
+
+GET
+
+https://api.scryfall.com/cards/ba09360a-067e-48a5-bdc5-a19fd066a785
+
+**Reversible cards** *(casual term)* · [Example reversible cards](/search?q=is%3Areversible)  
+This term is used by both Scryfall and WotC to describe a piece of cardstock with
+two distinct Magic cards or tokens printed on opposite sides.
+The two halves of the card are not related to each other
+in any way and are treated as two separate objects for gameplay or deckbuilding.
+The overall Card object will have its `layout` field set to `"reversible_card"`,
+while the individual `card_face` objects will have their own `layout` fields describing
+the distinct printings on both sides.
+Many other fields for a reversible card move into the `card_face` objects
+to describe the distinct face.
+
+GET
+
+https://api.scryfall.com/cards/3e3f0bcd-0796-494d-bf51-94b33c1671e9
+
+**Multi-faced cards** *(casual term)*  
+This term has no rules meaning and is used by Scryfall to describe any object with the nested `card_faces` property.
+
+**Double-sided cards** *(casual term)*  
+This term has no rules meaning and is used only casually to refer to any cards with gameplay information on both sides.

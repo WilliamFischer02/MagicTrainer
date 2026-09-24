@@ -1,0 +1,83 @@
+// WB Athreos Commander — "Athreos" (aristocrats / lifedrain).
+// format: commander | source: PLAYER-PROFILE_william.md (2026-07-03)
+Commander
+1 Athreos, God of Passage
+
+Deck
+1 Aetherflux Reservoir
+1 Amalia Benavides Aguirre
+1 Arcane Signet
+1 Banisher Priest
+1 Banishing Light
+1 Bastion of Remembrance
+1 Blood Artist
+1 Bone Splinters
+1 Case of the Uneaten Feast
+1 Caves of Koilos
+1 Chromatic Lantern
+1 Cliffhaven Vampire
+1 Command Tower
+1 Cruel Celebrant
+1 Darkstar Augur
+1 Deep-Cavern Bat
+1 Eaten Alive
+1 Endless Cockroaches
+1 Epicure of Blood
+1 Evolving Wilds
+1 Exotic Orchard
+1 Exquisite Blood
+1 Fellwar Stone
+1 Font of Return
+1 Fumigate
+1 Get Lost
+1 Go for the Throat
+1 Haunting Voyage
+1 Hedron Archive
+1 Hero's Downfall
+1 Indulgent Tormentor
+1 Karmic Guide
+1 Lifecreed Duo
+1 Lunar Convocation
+1 Marauding Blight-Priest
+1 Midnight Reaper
+1 Mind Stone
+1 Mirkwood Bats
+1 Mudflat Village
+1 Nantuko Husk
+1 Night's Whisper
+1 Opal Palace
+1 Orzhov Basilica
+1 Orzhov Signet
+1 Path of Ancestry
+1 Path to Exile
+1 Phyrexian Arena
+1 Rakshasa Gravecaller
+1 Read the Bones
+1 Regal Bloodlord
+1 Sanguine Bond
+1 Scoured Barrens
+1 Sengir Vampire
+1 Shatter the Sky
+1 Shriekmaw
+1 Sign in Blood
+1 Skullclamp
+1 Sol Ring
+1 Soul Warden
+1 Soul's Attendant
+1 Starscape Cleric
+1 Starseer Mentor
+1 Swiftfoot Boots
+1 Swords to Plowshares
+1 Tainted Field
+1 Talisman of Hierarchy
+1 Temple of Silence
+1 Ultimate Price
+1 Vault of the Archangel
+1 Vengeful Bloodwitch
+1 Village Rites
+1 Viscera Seer
+1 Welcoming Vampire
+1 Well of Lost Dreams
+1 Zulaport Cutthroat
+12 Plains
+12 Swamp

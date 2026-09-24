@@ -1,0 +1,39 @@
+# ---- bulk data (never commit) ----
+data/scryfall/
+data/spellbook/
+data/mtgjson/
+data/manifest.json
+kb-refresh-output/
+
+# ---- app (JS/Vite) ----
+app/node_modules/
+app/dist/
+app/dist-ssr/
+app/*.local
+app/logs
+app/*.log
+app/npm-debug.log*
+app/yarn-debug.log*
+app/yarn-error.log*
+app/pnpm-debug.log*
+
+# ---- app (Tauri/Rust) ----
+app/src-tauri/target/
+app/src-tauri/gen/schemas/
+
+# ---- local agent state ----
+CLAUDE.local.md
+.claude/settings.local.json
+
+# ---- OS / editors ----
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

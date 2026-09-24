@@ -1,0 +1,36 @@
+// RW Modern — "Pink" (Boros Aggro).
+// format: modern | source: PLAYER-PROFILE_william.md (2026-07-03)
+Deck
+1 Mardu Woe-Reaper
+2 Nef-Crop Entangler
+1 Satyr Hoplite
+2 Mardu Scout
+1 Borderland Marauder
+1 Fencing Ace
+2 Anep, Vizier of Hazoret
+2 Ahn-Crop Crasher
+1 Two-Headed Cerberus
+1 Danitha Capashen, Paragon
+2 Emberhorn Minotaur
+1 Ojutai Exemplars
+1 Bladetusk Boar
+1 Serra Angel
+1 Siege-Gang Commander
+1 Aegis Angel
+1 Sarkhan, the Dragonspeaker
+1 Always Watching
+2 Banishing Light
+1 Crib Swap
+1 Conclave Tribunal
+2 Divine Verdict
+1 Celestial Flare
+1 Trial of Zeal
+1 Shock
+1 Pacifism
+2 Brute Strength
+1 Cartouche of Zeal
+1 Fling
+10 Mountain
+9 Plains
+2 Thriving Heath
+2 Thriving Bluff

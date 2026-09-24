@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "mono-red-aggro",
+  "name": "Mono-Red Aggro (generic curve-out)",
+  "archetype": "aggro",
+  "description": "A generic 60-card red aggro curve: haste 1-drops, burn to clear blockers, burn to finish. Teaches racing math and the beatdown/control role assignment. Card names are placeholders (role labels) until verified against Scryfall.",
+  "turns": [
+    { "turn": 1, "boardSummary": "1 Mountain, one 1-power haste creature", "events": [
+      { "step": 1, "actor": "opponent", "cardName": "Mountain", "from": "hand", "to": "battlefield", "action": "play-land", "turn": 1, "phase": "main1" },
+      { "step": 2, "actor": "opponent", "cardName": "[1-drop haste creature]", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 1, "phase": "main1" },
+      { "step": 3, "actor": "opponent", "cardName": "[1-drop haste creature]", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 1, "phase": "declare-attackers", "note": "You take 1. Aggro is the beatdown; you are the control here." }
+    ]},
+    { "turn": 2, "boardSummary": "2 lands, two creatures", "events": [
+      { "step": 4, "actor": "opponent", "cardName": "[2-drop creature]", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 2, "phase": "main1" },
+      { "step": 5, "actor": "opponent", "cardName": "[1-drop haste creature]", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 2, "phase": "declare-attackers" }
+    ]},
+    { "turn": 3, "boardSummary": "3 lands, three creatures, burn in hand", "events": [
+      { "step": 6, "actor": "opponent", "cardName": "[burn spell]", "from": "hand", "to": "stack", "action": "cast", "turn": 3, "phase": "main1", "note": "Removal on your best blocker. If your engine piece is a 2-toughness creature, it dies here — sequence payoffs after this window or protect them." },
+      { "step": 7, "actor": "opponent", "cardName": "[burn spell]", "from": "stack", "to": "graveyard", "action": "resolve", "turn": 3, "phase": "main1" },
+      { "step": 8, "actor": "opponent", "cardName": "[team]", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 3, "phase": "declare-attackers" }
+    ]},
+    { "turn": 4, "boardSummary": "4 lands, wide board; ~10 damage dealt so far", "events": [
+      { "step": 9, "actor": "opponent", "cardName": "[team]", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 4, "phase": "declare-attackers", "note": "Decision point: if you cannot stabilize by turn 5, your line must be lethal or you lose the race." }
+    ]},
+    { "turn": 5, "boardSummary": "5 lands; burn to face", "events": [
+      { "step": 10, "actor": "opponent", "cardName": "[burn spell]", "from": "hand", "to": "stack", "action": "cast", "turn": 5, "phase": "main1", "note": "Reach: 3 to the face." }
+    ]}
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "uw-control",
+  "name": "UW Control (counters + sweepers)",
+  "archetype": "control",
+  "description": "A generic Azorius control script: cantrips early, holds up countermagic from turn 2, sweeps the board on turn 4, resolves a card-advantage engine, wins late with a single protected finisher. Teaches playing around counters and sweepers, and threat sequencing.",
+  "turns": [
+    { "turn": 1, "boardSummary": "1 land, passes", "events": [
+      { "step": 1, "actor": "opponent", "cardName": "[land]", "from": "hand", "to": "battlefield", "action": "play-land", "turn": 1, "phase": "main1" }
+    ]},
+    { "turn": 2, "boardSummary": "2 lands untapped at end of turn (counter mana up)", "events": [
+      { "step": 2, "actor": "opponent", "cardName": "[2-mana counterspell]", "from": "hand", "to": "hand", "action": "hold", "turn": 2, "phase": "end", "note": "They pass with mana up. Your two-drop is likely safe; your key engine piece is not. Bait with the lesser spell first." }
+    ]},
+    { "turn": 3, "boardSummary": "3 lands; cantrip at your end step", "events": [
+      { "step": 3, "actor": "opponent", "cardName": "[cantrip]", "from": "hand", "to": "stack", "action": "cast", "turn": 3, "phase": "end", "note": "Instant-speed card selection on your end step keeps counter mana open all turn." }
+    ]},
+    { "turn": 4, "boardSummary": "4 lands; SWEEPER", "events": [
+      { "step": 4, "actor": "opponent", "cardName": "[4-mana sweeper]", "from": "hand", "to": "stack", "action": "cast", "turn": 4, "phase": "main1", "note": "All creatures die (CR 704.5g after damage, or destroy effect). Aristocrats lines: this is a *gift* if a death-trigger payoff is out — every creature dying at once is a burst of triggers (CR 603.10a: leaves-the-battlefield abilities look back in time)." },
+      { "step": 5, "actor": "opponent", "cardName": "[all your creatures]", "from": "battlefield", "to": "graveyard", "action": "destroy", "turn": 4, "phase": "main1" }
+    ]},
+    { "turn": 5, "boardSummary": "5 lands; card-advantage engine resolves", "events": [
+      { "step": 6, "actor": "opponent", "cardName": "[draw engine]", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 5, "phase": "main1", "note": "From here they out-card you. Recursion (graveyard → battlefield) is how you rebuild faster than they can answer." }
+    ]},
+    { "turn": 7, "boardSummary": "7 lands; finisher with counter backup", "events": [
+      { "step": 7, "actor": "opponent", "cardName": "[finisher]", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 7, "phase": "main1" },
+      { "step": 8, "actor": "opponent", "cardName": "[finisher]", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 8, "phase": "declare-attackers", "note": "Clock: ~3 turns. Your line must win or neutralize this by turn 10." }
+    ]}
+  ]
+}

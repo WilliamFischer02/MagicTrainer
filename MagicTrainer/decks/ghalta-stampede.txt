@@ -1,0 +1,76 @@
+// Mono-Green Ghalta Commander — "Ghalta Stampede" (power-matters ramp/stompy).
+// format: commander | source: PLAYER-PROFILE_william.md (2026-07-03)
+Commander
+1 Ghalta, Stampede Tyrant
+
+Deck
+1 Ambush Krotiq
+1 Annoyed Altisaur
+1 Arcane Signet
+1 Avenger of Zendikar
+1 Bane of Progress
+1 Beast Within
+1 Beast-Kin Ranger
+1 Biogenic Upgrade
+1 Bloom Tender
+1 Cavalier of Thorns
+1 Command Tower
+1 Craterhoof Behemoth
+1 Cream of the Crop
+1 Cultivate
+1 Elvish Archdruid
+1 Elvish Mystic
+1 Elvish Visionary
+1 End-Raze Forerunners
+1 Endurance
+1 Evolving Wilds
+1 Exotic Orchard
+1 Fabled Passage
+1 Feral Krushok
+1 Garruk's Packleader
+1 Garruk's Uprising
+1 Garruk, Primal Hunter
+1 Germinating Wurm
+1 Ghalta, Primal Hunger
+1 Greenwarden of Murasa
+1 Hardened Scales
+1 Karn's Bastion
+1 Kodama's Reach
+1 Leaf Gilder
+1 Llanowar Elves
+1 Meteor Golem
+1 Michelangelo, Mutant BFF
+1 Nature's Lore
+1 Nissa's Pilgrimage
+1 Open the Way
+1 Oran-Rief, the Vastwood
+1 Overwhelm
+1 Quakestrider Ceratops
+1 Quilled Greatwurm
+1 Rabid Bite
+1 Ram Through
+1 Rampant Growth
+1 Realmwalker
+1 Reclamation Sage
+1 Reliquary Tower
+1 Return of the Wildspeaker
+1 Rishkar's Expertise
+1 Rishkar, Peema Renegade
+1 Selvala, Heart of the Wilds
+1 Servant of the Scale
+1 Siege Wurm
+1 Silverback Shaman
+1 Sol Ring
+1 Spined Tyrranax
+1 Terra Stomper
+1 The Boulder, Ready to Rumble
+1 Three Visits
+1 Time to Feed
+1 Titan of Industry
+1 Tyvar's Stand
+1 Unforgiving Aim
+1 Vivien Reid
+1 Voyaging Satyr
+1 Whisperer of the Wilds
+1 Whisperwood Elemental
+30 Forest

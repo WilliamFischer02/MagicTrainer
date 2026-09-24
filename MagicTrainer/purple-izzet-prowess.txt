@@ -1,0 +1,37 @@
+// UR Modern — "Purple" (Izzet Prowess Tempo).
+// format: modern | source: PLAYER-PROFILE_william.md (2026-07-03)
+Deck
+1 Monastery Swiftspear
+3 Jeskai Sage
+2 Jeskai Elder
+2 Jeskai Windscout
+1 Elusive Spellfist
+1 Stormcaller of Keranos
+1 Balmor, Battlemage Captain
+1 Spellheart Chimera
+1 Mistfire Adept
+1 Owlin Spiralmancer
+1 Tempest Djinn
+1 Fury
+1 Tolarian Terror
+4 Lightning Strike
+2 Bolt of Keranos
+2 Bathe in Dragonfire
+2 Flame-Blessed Bolt
+1 Searing Blood
+1 Magma Jet
+1 Twin Bolt
+1 Magma Spray
+1 Wild Slash
+1 Impulse
+1 Anticipate
+1 Quick Study
+1 Remand
+1 Swan Song
+1 Into the Void
+1 Bounce Off
+9 Island
+9 Mountain
+1 Ipnu Rivulet
+1 Desert of the Fervent
+1 Flamekin Village

@@ -1,0 +1,5 @@
+Name,Set code,Set name,Collector number,Foil,Rarity,Quantity,ManaBox ID,Scryfall ID,Purchase price,Misprint,Altered,Condition,Language,Purchase price currency
+Sol Ring,c21,Commander 2021,263,,uncommon,1,12345,f8a4b6a7-dfb1-4ab2-a8cf-3c5f0c7d8b41,1.50,false,false,near_mint,en,USD
+"Athreos, God of Passage",jou,Journey into Nyx,146,,mythic,1,12346,3a6c4d4e-1b3f-4f7f-9a1a-1c2b3d4e5f60,7.99,false,false,near_mint,en,USD
+Blood Artist,avr,Avacyn Restored,86,foil,uncommon,1,12347,4b7d5e5f-2c4a-4a8a-8b2b-2d3c4e5f6a71,1.20,false,false,excellent,en,USD
+Lightning Bolt,m10,Magic 2010,146,,common,4,12348,5c8e6f6a-3d5b-4b9b-9c3c-3e4d5f6a7b82,1.00,false,false,near_mint,en,USD

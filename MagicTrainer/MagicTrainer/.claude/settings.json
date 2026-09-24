@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Read", "Edit", "Write", "Glob", "Grep",
+      "Bash(npm install*)", "Bash(npm run *)", "Bash(npm test*)", "Bash(npx vitest*)", "Bash(npx tsc*)", "Bash(npx eslint*)", "Bash(npx prettier*)",
+      "Bash(cargo build*)", "Bash(cargo test*)", "Bash(cargo check*)", "Bash(cargo fmt*)", "Bash(cargo clippy*)",
+      "Bash(git status*)", "Bash(git add*)", "Bash(git commit*)", "Bash(git log*)", "Bash(git diff*)", "Bash(git checkout -b *)", "Bash(git switch*)", "Bash(git merge*)", "Bash(git push*)",
+      "Bash(powershell -File scripts/*)", "Bash(pwsh -File scripts/*)",
+      "WebFetch(domain:scryfall.com)", "WebFetch(domain:api.scryfall.com)", "WebFetch(domain:commanderspellbook.com)", "WebFetch(domain:backend.commanderspellbook.com)", "WebFetch(domain:spacecowmedia.github.io)", "WebFetch(domain:mtgjson.com)", "WebFetch(domain:v2.tauri.app)", "WebFetch(domain:tauri.app)", "WebFetch(domain:react.dev)", "WebFetch(domain:pixijs.com)", "WebFetch(domain:reactflow.dev)", "WebFetch(domain:code.claude.com)", "WebFetch(domain:magic.wizards.com)", "WebFetch(domain:edhrec.com)", "WebFetch(domain:www.npmjs.com)", "WebFetch(domain:docs.rs)", "WebFetch(domain:crates.io)",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(rm -rf *)", "Bash(git push --force*)", "Bash(git reset --hard*)", "Bash(git clean*)",
+      "Read(./.env)", "Read(./.env.*)", "Write(./.env)"
+    ],
+    "additionalDirectories": []
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "node -e \"const fs=require('fs');for(const f of ['docs/HANDOFF.md','docs/QUESTIONS_FOR_WILLIAM.md']){if(fs.existsSync(f)){console.log('=== '+f+' ===');console.log(fs.readFileSync(f,'utf8').slice(0,6000));}}\"" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "node -e \"const p=JSON.parse(require('fs').readFileSync(0,'utf8')).tool_input?.file_path||'';if(/app[\\\\/]src[\\\\/]core[\\\\/].*\\.ts$/.test(p)&&!/__tests__/.test(p)){const s=require('fs').readFileSync(p,'utf8');if(/from ['\\\"](react|@tauri-apps|pixi\\.js)/.test(s)){console.error('RULE VIOLATION: app/src/core must stay framework-free ('+p+')');process.exit(2);}}\"" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "node -e \"const {execSync}=require('child_process');try{const s=execSync('git status --porcelain',{encoding:'utf8'});if(s.trim()){console.log('REMINDER: uncommitted changes exist. Commit (Conventional Commits) and refresh docs/HANDOFF.md before ending the session.');}}catch(e){}\"" }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "MAGICTRAINER_USER_AGENT": "MagicTrainer/0.1 (github.com/WilliamFischer02/MagicTrainer)"
+  }
+}
