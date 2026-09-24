@@ -1,0 +1,95 @@
+{
+  "_comment": "Golden fixtures shared by vitest and cargo test. input → normalizeCardName / looseCardKey.",
+  "cases": [
+    {
+      "input": "Sol Ring",
+      "norm": "sol ring",
+      "loose": "sol ring"
+    },
+    {
+      "input": "  Sol   Ring ",
+      "norm": "sol ring",
+      "loose": "sol ring"
+    },
+    {
+      "input": "Lim-Dûl's Vault",
+      "norm": "lim-dul's vault",
+      "loose": "lim duls vault"
+    },
+    {
+      "input": "Lim-Dûl’s Vault",
+      "norm": "lim-dul's vault",
+      "loose": "lim duls vault"
+    },
+    {
+      "input": "Æther Vial",
+      "norm": "aether vial",
+      "loose": "aether vial"
+    },
+    {
+      "input": "Aether Vial",
+      "norm": "aether vial",
+      "loose": "aether vial"
+    },
+    {
+      "input": "Jötun Grunt",
+      "norm": "jotun grunt",
+      "loose": "jotun grunt"
+    },
+    {
+      "input": "Fire // Ice",
+      "norm": "fire // ice",
+      "loose": "fire ice"
+    },
+    {
+      "input": "Fire//Ice",
+      "norm": "fire // ice",
+      "loose": "fire ice"
+    },
+    {
+      "input": "Athreos, God of Passage",
+      "norm": "athreos, god of passage",
+      "loose": "athreos god of passage"
+    },
+    {
+      "input": "Ratonhnhaké:ton",
+      "norm": "ratonhnhake:ton",
+      "loose": "ratonhnhake ton"
+    },
+    {
+      "input": "Séance",
+      "norm": "seance",
+      "loose": "seance"
+    },
+    {
+      "input": "Ghalta, Primal Hunger",
+      "norm": "ghalta, primal hunger",
+      "loose": "ghalta primal hunger"
+    },
+    {
+      "input": "Kongming, “Sleeping Dragon”",
+      "norm": "kongming, \"sleeping dragon\"",
+      "loose": "kongming sleeping dragon"
+    },
+    {
+      "input": "Hazmat Suit (Used)",
+      "norm": "hazmat suit (used)",
+      "loose": "hazmat suit used"
+    },
+    {
+      "input": "+2 Mace",
+      "norm": "+2 mace",
+      "loose": "2 mace"
+    },
+    {
+      "input": "Ulvenwald Captive // Ulvenwald Abomination",
+      "norm": "ulvenwald captive // ulvenwald abomination",
+      "loose": "ulvenwald captive ulvenwald abomination"
+    },
+    {
+      "input": "lim duls vault",
+      "norm": "lim duls vault",
+      "loose": "lim duls vault"
+    }
+  ]
+}
