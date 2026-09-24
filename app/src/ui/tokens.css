@@ -1,0 +1,101 @@
+/*
+ * MagicTrainer design tokens — the only place raw colors / sizes are allowed (ui-quality rule).
+ * Theme: dark "arcane table" (docs/UI_UX_GUIDELINES.md, Q-005 provisional).
+ */
+:root {
+  color-scheme: dark;
+
+  /* surfaces */
+  --felt: #101418;
+  --felt-2: #0b0e12;
+  --panel: #1a2028;
+  --panel-2: #222a34;
+  --panel-3: #2b3441;
+  --line: rgba(233, 223, 199, 0.12);
+  --line-strong: rgba(233, 223, 199, 0.24);
+  --scrim: rgba(11, 14, 18, 0.72);
+
+  /* ink */
+  --ink: #e9dfc7;
+  --ink-2: rgba(233, 223, 199, 0.72);
+  --ink-3: rgba(233, 223, 199, 0.5);
+  --ink-on-gold: #1a1406;
+
+  /* accent + status */
+  --gold: #c9a227;
+  --gold-2: #e3c35a;
+  --gold-soft: rgba(201, 162, 39, 0.16);
+  --gold-line: rgba(201, 162, 39, 0.45);
+  --ok: #4fb477;
+  --ok-soft: rgba(79, 180, 119, 0.16);
+  --warn: #e0a030;
+  --warn-soft: rgba(224, 160, 48, 0.16);
+  --danger: #d3202a;
+  --danger-soft: rgba(211, 32, 42, 0.16);
+  --info: #5b9bd5;
+
+  /* mana (Scryfall conventional) */
+  --mana-w: #f9faf4;
+  --mana-u: #0e68ab;
+  --mana-b: #150b00;
+  --mana-r: #d3202a;
+  --mana-g: #00733e;
+  --mana-c: #ccc2c0;
+
+  /* type */
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Crimson Pro", "Cambria", "Georgia", serif;
+  --font-mono: "Cascadia Code", "Consolas", ui-monospace, monospace;
+  --fs-1: 12px;
+  --fs-2: 13px;
+  --fs-3: 14px;
+  --fs-4: 16px;
+  --fs-5: 20px;
+  --fs-6: 28px;
+  --lh-tight: 1.2;
+  --lh-body: 1.5;
+  --lh-prose: 1.6;
+
+  /* 8-px grid */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  /* shape + depth */
+  --r-1: 4px;
+  --r-2: 8px;
+  --r-3: 12px;
+  --r-pill: 999px;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 6px 24px rgba(0, 0, 0, 0.45);
+  --focus: 0 0 0 2px var(--felt), 0 0 0 4px var(--gold);
+
+  /* motion */
+  --t-fast: 120ms;
+  --t-base: 240ms;
+  --t-slow: 480ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* layout */
+  --rail-w: 232px;
+  --context-w: 360px;
+  --control-h: 36px;
+  --control-h-sm: 28px;
+
+  /* card proportions (63:88) */
+  --card-ratio: 63 / 88;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-fast: 0ms;
+    --t-base: 0ms;
+    --t-slow: 0ms;
+  }
+}

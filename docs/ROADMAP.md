@@ -19,7 +19,8 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Commander Spellbook bulk variants import (streaming visitor, D-011)
 - [ ] `find-my-combos` client with on-disk cache (default path per Q-013)
 - [x] Board rendering spike: PixiJS vs SVG+Motion — D-006 resolved: React DOM + SVG + Motion (both 60 fps at 10× load in WebView2)
-- [ ] Design tokens + typography + "arcane table" theme; app shell (nav, mode switch, settings)
+- [x] Design tokens + typography + "arcane table" theme; app shell (nav, mode switch, settings) — `app/src/ui/`, rules viewer + data/settings screens live
+- [ ] Rules viewer: link rule citations in step notes (Phase 3 wiring); glossary cross-links
 
 ## Phase 2 — Deck Builder MVP
 - [ ] Import UI (drag-drop, format auto-detect, error report, unresolved-name fixer with autocomplete)

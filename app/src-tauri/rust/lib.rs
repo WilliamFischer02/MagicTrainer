@@ -12,6 +12,7 @@ pub mod error;
 pub mod import;
 pub mod normalize;
 pub mod progress;
+pub mod rules;
 
 use tauri::Manager;
 
@@ -23,6 +24,7 @@ pub fn run() {
         .setup(|app| {
             let state = commands::AppState::from_app(app.handle())?;
             app.manage(state);
+            app.manage(rules::RulesState::default());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -30,6 +32,9 @@ pub fn run() {
             commands::db_query,
             commands::import_bulk,
             commands::scryfall_bulk_index,
+            rules::rules_status,
+            rules::rules_search,
+            rules::rules_get,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
