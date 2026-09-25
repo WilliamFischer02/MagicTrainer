@@ -75,11 +75,17 @@ export function Timeline({
       </div>
       <div className={b.track}>
         <div className={b.ticks} aria-hidden="true">
-          {timeline.turns.map((t) => (
-            <span key={t.gameTurn} className={`${b.tick} ${t.activePlayer === "you" ? b.tickYou : b.tickOpp}`} style={{ left: `${((t.firstIndex + 1) / Math.max(1, max)) * 100}%` }} title={t.boardSummary}>
-              {t.activePlayer === "you" ? "You" : "Opp"} T{t.playerTurn}
-            </span>
-          ))}
+          {timeline.turns.map((t, i) => {
+            const pct = ((t.firstIndex + 1) / Math.max(1, max)) * 100;
+            // Labels of the same player closer than ~6% of the track would overlap: keep the mark, drop the text.
+            const prevSame = timeline.turns.slice(0, i).reverse().find((p) => p.activePlayer === t.activePlayer);
+            const crowded = prevSame ? pct - ((prevSame.firstIndex + 1) / Math.max(1, max)) * 100 < 6 : false;
+            return (
+              <span key={t.gameTurn} className={`${b.tick} ${t.activePlayer === "you" ? b.tickYou : b.tickOpp}`} style={{ left: `${pct}%` }} title={`${t.activePlayer === "you" ? "Your" : "Opponent's"} turn ${t.playerTurn}${t.boardSummary ? ` — ${t.boardSummary}` : ""}`}>
+                {crowded ? "" : `${t.activePlayer === "you" ? "You" : "Opp"} T${t.playerTurn}`}
+              </span>
+            );
+          })}
         </div>
         <input
           className={b.range}

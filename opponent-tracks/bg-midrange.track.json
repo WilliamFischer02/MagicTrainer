@@ -9,49 +9,183 @@
       "turn": 1,
       "boardSummary": "Overgrown Tomb; Thoughtseize took your best card",
       "events": [
-        { "step": 1, "actor": "opponent", "cardName": "Overgrown Tomb", "from": "hand", "to": "battlefield", "action": "play-land", "turn": 1, "phase": "main1" },
-        { "step": 2, "actor": "opponent", "cardName": "Thoughtseize", "from": "hand", "to": "stack", "action": "cast", "turn": 1, "phase": "main1", "note": "Turn-1 discard: they look at your hand and take the best card. Decision point: which card would you least like to lose? That is the one to play FIRST next time you can.", "breakPoint": "You cannot stop the discard, but you can blunt it: keep two copies of the same role (two outlets, two payoffs) so losing one does not end the line." },
-        { "step": 3, "actor": "opponent", "cardName": "Thoughtseize", "from": "stack", "to": "graveyard", "action": "resolve", "turn": 1, "phase": "main1" }
+        {
+          "step": 1,
+          "actor": "opponent",
+          "cardName": "Overgrown Tomb",
+          "from": "hand",
+          "to": "battlefield",
+          "action": "play-land",
+          "turn": 1,
+          "phase": "main1"
+        },
+        {
+          "step": 2,
+          "actor": "opponent",
+          "cardName": "Thoughtseize",
+          "from": "hand",
+          "to": "stack",
+          "action": "cast",
+          "turn": 1,
+          "phase": "main1",
+          "note": "Turn-1 discard: they look at your hand and take the best card. Decision point: which card would you least like to lose? That is the one to play FIRST next time you can.",
+          "breakPoint": "You cannot stop the discard, but you can blunt it: keep two copies of the same role (two outlets, two payoffs) so losing one does not end the line."
+        },
+        {
+          "step": 3,
+          "actor": "opponent",
+          "cardName": "Thoughtseize",
+          "from": "stack",
+          "to": "graveyard",
+          "action": "resolve",
+          "turn": 1,
+          "phase": "main1"
+        }
       ]
     },
     {
       "turn": 2,
       "boardSummary": "2 lands, Tarmogoyf",
       "events": [
-        { "step": 4, "actor": "opponent", "cardName": "Tarmogoyf", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 2, "phase": "main1", "note": "A two-mana threat that grows with the graveyards. It will be a 4/5 by turn 4." }
+        {
+          "step": 4,
+          "actor": "opponent",
+          "cardName": "Tarmogoyf",
+          "from": "hand",
+          "to": "battlefield",
+          "action": "cast+resolve",
+          "turn": 2,
+          "phase": "main1",
+          "note": "A two-mana threat that grows with the graveyards. It will be a 4/5 by turn 4."
+        }
       ]
     },
     {
       "turn": 3,
       "boardSummary": "3 lands, Tarmogoyf, Liliana of the Veil (edict used)",
       "events": [
-        { "step": 5, "actor": "opponent", "cardName": "Liliana of the Veil", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 3, "phase": "main1", "note": "Planeswalker: -2 makes you sacrifice a creature. An edict ignores hexproof and indestructible; it takes your worst creature only if you have more than one.", "breakPoint": "Against an edict, keep a spare body (a token or a cheap creature) on the battlefield before you deploy the engine piece." },
-        { "step": 6, "actor": "opponent", "cardName": "[your worst creature]", "from": "battlefield", "to": "graveyard", "action": "sacrifice", "turn": 3, "phase": "main1", "causedBy": ["Liliana of the Veil"] },
-        { "step": 7, "actor": "opponent", "cardName": "Tarmogoyf", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 3, "phase": "declare-attackers", "damage": 3 }
+        {
+          "step": 5,
+          "actor": "opponent",
+          "cardName": "Liliana of the Veil",
+          "from": "hand",
+          "to": "battlefield",
+          "action": "cast+resolve",
+          "turn": 3,
+          "phase": "main1",
+          "note": "Planeswalker: -2 makes you sacrifice a creature. An edict ignores hexproof and indestructible; it takes your worst creature only if you have more than one.",
+          "breakPoint": "Against an edict, keep a spare body (a token or a cheap creature) on the battlefield before you deploy the engine piece."
+        },
+        {
+          "step": 6,
+          "actor": "opponent",
+          "cardName": "[your worst creature]",
+          "from": "battlefield",
+          "to": "graveyard",
+          "action": "sacrifice",
+          "turn": 3,
+          "phase": "main1",
+          "causedBy": [
+            "Liliana of the Veil"
+          ]
+        },
+        {
+          "step": 7,
+          "actor": "opponent",
+          "cardName": "Tarmogoyf",
+          "from": "battlefield",
+          "to": "battlefield",
+          "action": "attack",
+          "turn": 3,
+          "phase": "declare-attackers",
+          "damage": 3
+        }
       ]
     },
     {
       "turn": 4,
       "boardSummary": "4 lands, Tarmogoyf 4/5, Liliana ticking up, Fatal Push in hand",
       "events": [
-        { "step": 8, "actor": "opponent", "cardName": "Fatal Push", "from": "hand", "to": "stack", "action": "cast", "turn": 4, "phase": "main1", "note": "One-mana instant-speed removal for a creature with mana value 2 or less. It will target the engine piece, not the fodder." , "breakPoint": "Sacrifice the targeted creature in response if you have an outlet: the removal fizzles (no legal target, CR 608.2b) and you still get the death trigger." },
-        { "step": 9, "actor": "opponent", "cardName": "Fatal Push", "from": "stack", "to": "graveyard", "action": "resolve", "turn": 4, "phase": "main1" },
-        { "step": 10, "actor": "opponent", "cardName": "Tarmogoyf", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 4, "phase": "declare-attackers", "damage": 4 }
+        {
+          "step": 8,
+          "actor": "opponent",
+          "cardName": "Fatal Push",
+          "from": "hand",
+          "to": "stack",
+          "action": "cast",
+          "turn": 4,
+          "phase": "main1",
+          "note": "One-mana instant-speed removal for a creature with mana value 2 or less. It will target the engine piece, not the fodder.",
+          "breakPoint": "Sacrifice the targeted creature in response if you have an outlet: the removal fizzles (no legal target, CR 608.2b) and you still get the death trigger."
+        },
+        {
+          "step": 9,
+          "actor": "opponent",
+          "cardName": "Fatal Push",
+          "from": "stack",
+          "to": "graveyard",
+          "action": "resolve",
+          "turn": 4,
+          "phase": "main1"
+        },
+        {
+          "step": 10,
+          "actor": "opponent",
+          "cardName": "Tarmogoyf",
+          "from": "battlefield",
+          "to": "battlefield",
+          "action": "attack",
+          "turn": 4,
+          "phase": "declare-attackers",
+          "damage": 4
+        }
       ]
     },
     {
       "turn": 5,
       "boardSummary": "5 lands, Tarmogoyf, Scavenging Ooze eating graveyards",
       "events": [
-        { "step": 11, "actor": "opponent", "cardName": "Scavenging Ooze", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 5, "phase": "main1", "note": "Incidental graveyard hate: every green mana exiles a card from a graveyard. Recursion lines get slower from here.", "breakPoint": "Recur the piece you need NOW rather than banking value in the graveyard; anything left there will be exiled at their leisure." },
-        { "step": 12, "actor": "opponent", "cardName": "Tarmogoyf", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 5, "phase": "declare-attackers", "damage": 5 }
+        {
+          "step": 11,
+          "actor": "opponent",
+          "cardName": "Scavenging Ooze",
+          "from": "hand",
+          "to": "battlefield",
+          "action": "cast+resolve",
+          "turn": 5,
+          "phase": "main1",
+          "note": "Incidental graveyard hate: every green mana exiles a card from a graveyard. Recursion lines get slower from here.",
+          "breakPoint": "Recur the piece you need NOW rather than banking value in the graveyard; anything left there will be exiled at their leisure."
+        },
+        {
+          "step": 12,
+          "actor": "opponent",
+          "cardName": "Tarmogoyf",
+          "from": "battlefield",
+          "to": "battlefield",
+          "action": "attack",
+          "turn": 5,
+          "phase": "declare-attackers",
+          "damage": 5
+        }
       ]
     },
     {
       "turn": 6,
       "boardSummary": "6 lands, two attackers; you must be ahead on board or life by now",
       "events": [
-        { "step": 13, "actor": "opponent", "cardName": "[team]", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 6, "phase": "declare-attackers", "damage": 7, "note": "Decision point: midrange wins long games through card quality. If your line is not online by turn 6, you are the beatdown now — trade life for tempo." }
+        {
+          "step": 13,
+          "actor": "opponent",
+          "cardName": "[team]",
+          "from": "battlefield",
+          "to": "battlefield",
+          "action": "attack",
+          "turn": 6,
+          "phase": "declare-attackers",
+          "damage": 7,
+          "note": "Decision point: midrange wins long games through card quality. If your line is not online by turn 6, you are the beatdown now — trade life for tempo."
+        }
       ]
     }
   ]

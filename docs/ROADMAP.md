@@ -20,7 +20,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] `find-my-combos` client with on-disk cache (default path per Q-013) — `rust/spellbook_api.rs` + `core/strategy/spellbook.ts` (D-013), 24 h TTL, stale-on-offline
 - [x] Board rendering spike: PixiJS vs SVG+Motion — D-006 resolved: React DOM + SVG + Motion (both 60 fps at 10× load in WebView2)
 - [x] Design tokens + typography + "arcane table" theme; app shell (nav, mode switch, settings) — `app/src/ui/`, rules viewer + data/settings screens live
-- [ ] Rules viewer: link rule citations in step notes (Phase 3 wiring); glossary cross-links
+- [x] Rules viewer: link rule citations in step notes — `StepPanel` citation buttons open the context panel via `rules_get` (2026-09-25); glossary cross-links still open
 - [ ] ESLint + `no-restricted-imports` dependency-direction rule (eslint is not installed; `npm run lint` fails)
 - [ ] UI review minors (2026-09-24): fold DataScreen inline token styles into CSS modules (partly done: `.lede`); `--measure-*` tokens for 640/860/900 px widths; 2× DPI screenshot pass on a HiDPI display
 
@@ -38,7 +38,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Arrow/pulse renderers per `zone-trajectory-signatures.md`; reduced-motion mode — arrow kinds (draw/cast/remove/return/exile/attack), trigger pulses, ghost trails; `prefers-reduced-motion` → 0 ms
 - [x] Step panel: why (CR citation → opens rules viewer), mana/cards/life ledger, break points — `board/StepPanel.tsx`
 - [x] Opponent track loader + validator; 5 more tracks (bg-midrange, combo-storm, edh-precon-value, edh-stax, edh-graveyard-hate) — `core/opponent/schema.ts`, `data/tracks.ts`; real card names verified against the DB by test
-- [ ] Rules viewer: search the bundled CR sections by rule number/keyword
+- [x] Rules viewer: search the bundled CR sections by rule number/keyword — `RulesScreen` (Phase 1) + citation jump from the Trainer step panel
 
 ## Phase 4 — Polish & ship
 - [ ] Onboarding + first-run data download flow; offline mode

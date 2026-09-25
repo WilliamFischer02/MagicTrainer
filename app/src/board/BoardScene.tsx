@@ -158,7 +158,7 @@ export function BoardScene({ snapshot, step, cardOf, reducedMotion }: BoardScene
             Opponent's battlefield
           </span>
           <BfRows rows={rows(opp.battlefield)} cardOf={cardOf} size="xs" highlight={highlight} pulse={pulse} />
-          {opp.stack.length > 0 && <Stack cards={opp.stack} cardOf={cardOf} highlight={highlight} />}
+          {opp.stack.length > 0 && <Stack who="opponent" cards={opp.stack} cardOf={cardOf} highlight={highlight} />}
         </div>
         <ZoneList label="Graveyard" zoneKey="opponent:graveyard" cards={opp.graveyard} cardOf={cardOf} cr={ZONE_CR.graveyard} highlight={highlight} />
         <ZoneList label="Exile" zoneKey="opponent:exile" cards={opp.exile} cardOf={cardOf} cr={ZONE_CR.exile} highlight={highlight} />
@@ -172,7 +172,7 @@ export function BoardScene({ snapshot, step, cardOf, reducedMotion }: BoardScene
             Your battlefield
           </span>
           <BfRows rows={rows(you.battlefield)} cardOf={cardOf} size="sm" highlight={highlight} pulse={pulse} />
-          {you.stack.length > 0 && <Stack cards={you.stack} cardOf={cardOf} highlight={highlight} />}
+          {you.stack.length > 0 && <Stack who="you" cards={you.stack} cardOf={cardOf} highlight={highlight} />}
         </div>
         {/* Your zone row */}
         <div className={b.youBottom}>
@@ -279,9 +279,9 @@ function BfRows({ rows, cardOf, size, highlight, pulse }: { rows: Record<RowKey,
   );
 }
 
-function Stack({ cards, cardOf, highlight }: { cards: ZoneCard[]; cardOf: (n: string) => CardOracle | undefined; highlight: (c: ZoneCard) => boolean }) {
+function Stack({ who, cards, cardOf, highlight }: { who: "you" | "opponent"; cards: ZoneCard[]; cardOf: (n: string) => CardOracle | undefined; highlight: (c: ZoneCard) => boolean }) {
   return (
-    <div className={b.stack} data-zone="you:stack" title={`The stack — ${ZONE_CR.stack}`}>
+    <div className={b.stack} data-zone={`${who}:stack`} title={`The stack — ${ZONE_CR.stack}`}>
       <span className={b.stackLabel}>Stack</span>
       {cards.map((c) => (
         <CardSprite key={c.key} card={c} oracle={cardOf(c.name)} size="sm" highlight={highlight(c)} />

@@ -53,6 +53,16 @@
           "turn": 3,
           "phase": "end",
           "note": "Instant-speed card selection on your end step keeps counter mana open all turn."
+        },
+        {
+          "step": 10,
+          "actor": "opponent",
+          "cardName": "[cantrip]",
+          "from": "stack",
+          "to": "graveyard",
+          "action": "resolve",
+          "turn": 3,
+          "phase": "end"
         }
       ]
     },
@@ -71,6 +81,16 @@
           "phase": "main1",
           "note": "All creatures die (CR 704.5g after damage, or destroy effect). Aristocrats lines: this is a *gift* if a death-trigger payoff is out — every creature dying at once is a burst of triggers (CR 603.10a: leaves-the-battlefield abilities look back in time).",
           "breakPoint": "Decision point: against open white mana on turn 4, do not overextend. Hold your second and third creatures until the sweeper is spent, or force it with two threats and keep the engine in hand."
+        },
+        {
+          "step": 9,
+          "actor": "opponent",
+          "cardName": "[4-mana sweeper]",
+          "from": "stack",
+          "to": "graveyard",
+          "action": "resolve",
+          "turn": 4,
+          "phase": "main1"
         },
         {
           "step": 5,
