@@ -2,9 +2,10 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/re
 import { dbStatus } from "../bridge/bulk";
 import { tauriDb } from "../bridge/db";
 import { imageCacheClear, imageCacheStatus, imagePrefetch } from "../bridge/images";
+import { deleteDeck, saveDeck } from "../bridge/decks";
 import { comboCacheClear, comboCacheStatus, deckToSpellbookRequest, findMyCombos } from "../bridge/spellbook";
 import type { Deck } from "../core/types";
-import { getCardByOracleId, getCardsByOracleIds, getRulings, loadNameIndex, searchCardNames } from "../data";
+import { getCardByOracleId, getCardsByOracleIds, getDeck, getRulings, listDecks, loadNameIndex, searchCardNames } from "../data";
 
 /**
  * TanStack Query layer over `src/data` (SQL) and `src/bridge` (Tauri commands).
@@ -35,7 +36,40 @@ export const keys = {
   imageCache: ["image-cache"] as const,
   comboCache: ["combo-cache"] as const,
   combos: (key: string) => ["combos", key] as const,
+  decks: ["decks"] as const,
+  deck: (id: string) => ["decks", "one", id] as const,
 };
+
+// ---- decks ---------------------------------------------------------------------------
+
+export function useDecks() {
+  return useQuery({ queryKey: keys.decks, queryFn: () => listDecks(tauriDb), staleTime: 60 * 1000 });
+}
+
+export function useDeck(id: string | undefined) {
+  return useQuery({
+    queryKey: keys.deck(id ?? ""),
+    queryFn: () => getDeck(tauriDb, id ?? ""),
+    enabled: !!id,
+    staleTime: 60 * 1000,
+  });
+}
+
+export function useSaveDeck() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (deck: Deck) => saveDeck(deck),
+    onSuccess: (_saved, deck) => Promise.all([client.invalidateQueries({ queryKey: keys.decks }), client.invalidateQueries({ queryKey: keys.deck(deck.id) })]),
+  });
+}
+
+export function useDeleteDeck() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteDeck(id),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.decks }),
+  });
+}
 
 export function useDbStatus() {
   return useQuery({ queryKey: keys.dbStatus, queryFn: dbStatus, staleTime: 30 * 1000 });

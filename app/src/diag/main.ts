@@ -21,6 +21,7 @@ type Report = {
   tauri: boolean;
   images: { first: ImageResult[]; second: ImageResult[]; cacheBefore: unknown; cacheAfter: unknown };
   combos: { first: unknown; second: unknown; error?: string };
+  decks: { saved: unknown; listed: unknown; deleted: unknown; error?: string };
   passed: boolean;
   failures: string[];
 };
@@ -48,11 +49,45 @@ function loadImage(url: string, bust: string): Promise<ImageResult> {
   });
 }
 
+/**
+ * `?seed=<dir>` — import every `.txt` in a directory through the real pipeline
+ * (read → parse → resolve → save) and keep the decks. Dev seeding for screenshots/tests.
+ */
+async function seedDecks(dir: string, q: URLSearchParams) {
+  const { readImportFile, saveDeck } = await import("../bridge/decks");
+  const { importDeck } = await import("../core/import/deckImport");
+  const { tauriDb } = await import("../bridge/db");
+  const { loadNameIndex, resolveDeckNames } = await import("../data/nameIndex");
+  const files = (q.get("files") ?? "").split(",").filter(Boolean);
+  const index = await loadNameIndex(tauriDb);
+  const out: unknown[] = [];
+  for (const f of files) {
+    const file = await readImportFile(`${dir}\\${f}`);
+    const { deck } = importDeck(file.text, { fileName: file.fileName });
+    const r = resolveDeckNames(index, deck);
+    const saved = await saveDeck({ ...r.deck, id: `seed-${f.replace(/\W+/g, "-")}` });
+    out.push({ file: f, name: deck.name, unresolved: r.unresolved.length, saved });
+    say(`seeded ${f} → ${deck.name} (${r.unresolved.length} unresolved)`);
+  }
+  return out;
+}
+
 async function main() {
   const q = new URLSearchParams(location.search);
   const tauri = "__TAURI_INTERNALS__" in window;
   const failures: string[] = [];
   say(`tauri: ${tauri}`);
+  const seed = q.get("seed");
+  if (seed && tauri) {
+    const seeded = await seedDecks(seed, q);
+    const collectorUrl = q.get("collector");
+    if (collectorUrl) await fetch(collectorUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ seeded, passed: true, failures: [] }) }).catch(() => undefined);
+    if (q.get("autoclose") === "1") {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      await getCurrentWindow().close();
+    }
+    return;
+  }
 
   const cacheBefore = tauri ? ImageCacheStatusSchema.parse(await invoke("image_cache_status")) : null;
   say(`image cache before: ${JSON.stringify(cacheBefore)}`);
@@ -95,7 +130,45 @@ async function main() {
     }
   }
 
-  const report: Report = { tauri, images: { first, second, cacheBefore, cacheAfter }, combos, passed: failures.length === 0, failures };
+  // 3. deck save → read back through the data layer → delete (IPC contract for decks.rs).
+  const decks: Report["decks"] = { saved: null, listed: null, deleted: null };
+  if (tauri) {
+    try {
+      const { saveDeck, deleteDeck } = await import("../bridge/decks");
+      const { tauriDb } = await import("../bridge/db");
+      const { listDecks, getDeck } = await import("../data/decks");
+      const id = `diag-${Date.now().toString(36)}`;
+      const deck = {
+        id,
+        name: "Diagnostics deck",
+        format: "commander" as const,
+        commanders: [{ name: "Athreos, God of Passage", quantity: 1, oracleId: "00000000-0000-0000-0000-000000000000" }],
+        main: [{ name: "Blood Artist", quantity: 1 }, { name: "Swamp", quantity: 30 }],
+        sideboard: [],
+        extra: { maybeboard: [{ name: "Sol Ring", quantity: 1 }] },
+        source: { format: "decklist-text" as const, raw: "1 Blood Artist" },
+      };
+      const saved = await saveDeck(deck);
+      const listed = (await listDecks(tauriDb)).find((x) => x.id === id) ?? null;
+      const full = await getDeck(tauriDb, id);
+      const deleted = await deleteDeck(id);
+      decks.saved = saved;
+      decks.listed = listed;
+      decks.deleted = deleted;
+      say(`decks: saved=${JSON.stringify(saved)} listed=${JSON.stringify(listed)} full.main=${full?.main.length} extra=${Object.keys(full?.extra ?? {}).join(",")} deleted=${deleted}`);
+      if (!saved.created || saved.entries !== 4) failures.push("deck_save did not create 4 entries");
+      if (!listed || listed.mainCount !== 31 || listed.commanders[0] !== "Athreos, God of Passage" || listed.unresolved !== 2) failures.push(`listDecks summary wrong: ${JSON.stringify(listed)}`);
+      if (!full || full.main.length !== 2 || full.extra.maybeboard?.length !== 1) failures.push("getDeck did not round-trip sections");
+      if (!deleted) failures.push("deck_delete returned false");
+    } catch (e) {
+      const m = e instanceof Error ? e.message : String(e);
+      decks.error = m;
+      failures.push(`decks: ${m}`);
+      say(`decks ERR ${m}`);
+    }
+  }
+
+  const report: Report = { tauri, images: { first, second, cacheBefore, cacheAfter }, combos, decks, passed: failures.length === 0, failures };
   say(report.passed ? "PASSED" : `FAILED: ${failures.join("; ")}`);
   log.className = report.passed ? "ok" : "bad";
 

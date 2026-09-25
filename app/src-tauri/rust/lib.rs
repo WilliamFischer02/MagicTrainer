@@ -6,10 +6,12 @@
 //! - `net`        User-Agent, HTTP agent, rate limiter shared by every outbound path
 //! - `images`     card-image disk cache behind the `mtimg://` custom protocol
 //! - `spellbook_api` Commander Spellbook `find-my-combos` client with a 24 h disk cache
+//! - `decks`      deck save/delete + import-file reading (writes; reads go through `db_query`)
 //! - `commands`   the Tauri command surface
 
 pub mod commands;
 pub mod db;
+pub mod decks;
 pub mod download;
 pub mod error;
 pub mod images;
@@ -47,6 +49,9 @@ pub fn run() {
             spellbook_api::find_my_combos,
             spellbook_api::combo_cache_status,
             spellbook_api::combo_cache_clear,
+            decks::read_import_file,
+            decks::deck_save,
+            decks::deck_delete,
             rules::rules_status,
             rules::rules_search,
             rules::rules_get,

@@ -63,8 +63,8 @@ export function Card({ title, children, className }: { title?: string; children:
   );
 }
 
-export function Callout({ tone = "info", icon, children }: { tone?: "info" | "danger" | "ok"; icon?: ReactNode; children: ReactNode }) {
-  const cls = [s.callout, tone === "danger" && s.calloutDanger, tone === "ok" && s.calloutOk].filter(Boolean).join(" ");
+export function Callout({ tone = "info", icon, children }: { tone?: "info" | "danger" | "ok" | "warn"; icon?: ReactNode; children: ReactNode }) {
+  const cls = [s.callout, tone === "danger" && s.calloutDanger, tone === "ok" && s.calloutOk, tone === "warn" && s.calloutWarn].filter(Boolean).join(" ");
   return (
     <div className={cls} role={tone === "danger" ? "alert" : "status"}>
       {icon}

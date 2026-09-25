@@ -112,6 +112,26 @@ export const DatabaseIcon = (p: P) => (
 );
 
 /** Brand mark: a three-point "planar" sigil in gold. */
+export const ImportIcon = (p: P) => (
+  <Base {...p}>
+    <path d="M10 12V3M6.5 6.5L10 3l3.5 3.5" />
+    <path d="M4 13v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2" />
+  </Base>
+);
+
+export const ClipboardIcon = (p: P) => (
+  <Base {...p}>
+    <rect x="5" y="4" width="10" height="13" rx="1.5" />
+    <path d="M8 4V3h4v1M8 9h4M8 12h4" />
+  </Base>
+);
+
+export const ArrowLeftIcon = (p: P) => (
+  <Base {...p}>
+    <path d="M16 10H4M8.5 5.5L4 10l4.5 4.5" />
+  </Base>
+);
+
 export const TrashIcon = (p: P) => (
   <Base {...p}>
     <path d="M4 6h12M8.5 9v5M11.5 9v5M5.5 6l.8 10.2a1 1 0 0 0 1 .8h5.4a1 1 0 0 0 1-.8L14.5 6M8 6V4h4v2" />

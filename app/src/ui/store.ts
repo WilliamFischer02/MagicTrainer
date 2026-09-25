@@ -11,9 +11,12 @@ export interface AppState {
   mode: Mode;
   route: Route;
   context: ContextItem | null;
+  /** Deck open in the Decks screen (persisted per session only). */
+  selectedDeckId: string | null;
   setMode: (mode: Mode) => void;
   navigate: (route: Route) => void;
   setContext: (item: ContextItem | null) => void;
+  selectDeck: (id: string | null) => void;
 }
 
 /** `?route=rules&mode=trainer` on the dev URL selects the initial screen (screenshots, tests). */
@@ -28,9 +31,11 @@ function initialFromUrl(): { route: Route; mode: Mode } {
 export const useAppStore = create<AppState>((set) => ({
   ...initialFromUrl(),
   context: null,
+  selectedDeckId: new URLSearchParams(globalThis.location?.search ?? "").get("deck"),
   setMode: (mode) => set({ mode }),
   navigate: (route) => set({ route }),
   setContext: (context) => set({ context }),
+  selectDeck: (selectedDeckId) => set({ selectedDeckId }),
 }));
 
 export const ROUTES: { id: Route; label: string; hint: string }[] = [

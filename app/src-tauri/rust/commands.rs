@@ -2,12 +2,12 @@
 //! `app/src/bridge/`. Long operations run on a blocking thread and stream `bulk-progress`
 //! events (payload: `progress::Progress`).
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
 use rusqlite::types::{Value as SqlValue, ValueRef};
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, Emitter, Manager, State};
+use tauri::{AppHandle, Emitter, Manager};
 
 use crate::db;
 use crate::download;
@@ -64,8 +64,16 @@ pub struct DbStatus {
     pub meta: std::collections::BTreeMap<String, String>,
 }
 
+/// Runs on the blocking pool: sync commands execute on the main thread and would stall the
+/// window while a big query (e.g. the 38k-row name index) serializes.
 #[tauri::command]
-pub fn db_status(state: State<'_, AppState>) -> Result<DbStatus> {
+pub async fn db_status(app: AppHandle) -> Result<DbStatus> {
+    tauri::async_runtime::spawn_blocking(move || db_status_blocking(&app.state::<AppState>()))
+        .await
+        .map_err(|e| msg(format!("task panicked: {e}")))?
+}
+
+fn db_status_blocking(state: &AppState) -> Result<DbStatus> {
     let mut status = DbStatus {
         db_path: state.db_path.display().to_string(),
         data_dir: state.data_dir.display().to_string(),
@@ -121,17 +129,24 @@ fn from_sql(v: ValueRef<'_>) -> serde_json::Value {
 /// Read-only SQL for the data layer. The connection is opened read-only and `query_only`,
 /// so a mistaken UPDATE fails instead of mutating the card DB.
 #[tauri::command]
-pub fn db_query(
-    state: State<'_, AppState>,
+pub async fn db_query(
+    app: AppHandle,
     sql: String,
     params: Option<Vec<serde_json::Value>>,
 ) -> Result<Vec<serde_json::Map<String, serde_json::Value>>> {
+    let db_path = app.state::<AppState>().db_path.clone();
+    tauri::async_runtime::spawn_blocking(move || db_query_blocking(&db_path, &sql, params))
+        .await
+        .map_err(|e| msg(format!("task panicked: {e}")))?
+}
+
+fn db_query_blocking(db_path: &Path, sql: &str, params: Option<Vec<serde_json::Value>>) -> Result<Vec<serde_json::Map<String, serde_json::Value>>> {
     let head = sql.trim_start().to_ascii_lowercase();
     if !(head.starts_with("select") || head.starts_with("with") || head.starts_with("pragma table_info")) {
         return Err(msg("db_query accepts SELECT / WITH statements only"));
     }
-    let conn = db::open_ro(&state.db_path)?;
-    let mut stmt = conn.prepare_cached(&sql)?;
+    let conn = db::open_ro(db_path)?;
+    let mut stmt = conn.prepare_cached(sql)?;
     let names: Vec<String> = stmt.column_names().iter().map(|s| s.to_string()).collect();
     let params: Vec<SqlValue> = params.unwrap_or_default().iter().map(to_sql).collect::<Result<_>>()?;
     let mut rows = stmt.query(rusqlite::params_from_iter(params.iter()))?;
