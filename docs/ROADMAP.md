@@ -21,7 +21,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Board rendering spike: PixiJS vs SVG+Motion — D-006 resolved: React DOM + SVG + Motion (both 60 fps at 10× load in WebView2)
 - [x] Design tokens + typography + "arcane table" theme; app shell (nav, mode switch, settings) — `app/src/ui/`, rules viewer + data/settings screens live
 - [x] Rules viewer: link rule citations in step notes — `StepPanel` citation buttons open the context panel via `rules_get` (2026-09-25); glossary cross-links still open
-- [ ] ESLint + `no-restricted-imports` dependency-direction rule (eslint is not installed; `npm run lint` fails)
+- [x] ESLint 9 flat config + `no-restricted-imports` dependency-direction rule (`app/eslint.config.js`); 0 violations
 - [ ] UI review minors (2026-09-24): fold DataScreen inline token styles into CSS modules (partly done: `.lede`); `--measure-*` tokens for 640/860/900 px widths; 2× DPI screenshot pass on a HiDPI display
 
 ## Phase 2 — Deck Builder MVP ✅ (2026-09-25; polish items tracked inline)
@@ -40,11 +40,11 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Opponent track loader + validator; 5 more tracks (bg-midrange, combo-storm, edh-precon-value, edh-stax, edh-graveyard-hate) — `core/opponent/schema.ts`, `data/tracks.ts`; real card names verified against the DB by test
 - [x] Rules viewer: search the bundled CR sections by rule number/keyword — `RulesScreen` (Phase 1) + citation jump from the Trainer step panel
 
-## Phase 4 — Polish & ship
-- [ ] Onboarding + first-run data download flow; offline mode
-- [ ] Accessibility pass (keyboard nav, contrast, screen-reader labels on HUD)
-- [ ] Playwright E2E on the built app; crash reporting (local log)
-- [ ] `tauri build` MSI/NSIS; auto-update decision; README with screenshots; v1.0.0 tag
+## Phase 4 — Polish & ship ✅ (2026-09-25 — v1.0.0)
+- [x] Onboarding + first-run data download flow; offline mode — `OnboardingScreen`, `useOnline` banner, Spellbook stale-cache fallback (2026-09-25)
+- [x] Accessibility pass (keyboard nav incl. Space-on-button fix, ≥ 12 px HUD labels, ARIA on board/timeline/panels, focus rings restored) — ui-reviewer passes 2026-09-24/25; heading-order and "consequence" field remain minors
+- [x] Playwright E2E on the built app (`app/e2e/`, CDP into WebView2, incl. a 2× DPI capture); crash reporting = local log (`rust/applog.rs`, Q-011)
+- [x] `tauri build` MSI (6.7 MB) + NSIS (3.8 MB), unsigned; no auto-update (D-019); README with screenshots; **v1.0.0 tagged 2026-09-25**
 
 ## Later / ideas parking lot
 - Custom opponent tracks authored from a real decklist (semi-automatic)

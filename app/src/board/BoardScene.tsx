@@ -138,7 +138,6 @@ export function BoardScene({ snapshot, step, cardOf, reducedMotion }: BoardScene
     });
     ro.observe(host);
     return () => ro.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Draw arrows with a path-length sweep; static when motion is reduced.

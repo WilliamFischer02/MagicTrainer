@@ -45,3 +45,8 @@ data/*.sqlite-wal
 
 # ---- dev caches (images, spellbook answers) ----
 data/cache/
+
+# ---- e2e artifacts ----
+app/e2e/results/
+app/e2e/report/
+app/e2e/shots/

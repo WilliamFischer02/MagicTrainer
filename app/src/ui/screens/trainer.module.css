@@ -9,6 +9,7 @@
   gap: var(--s-3);
   min-height: 0;
   min-width: 0;
+  container-type: inline-size;
 }
 
 .controls {
@@ -52,6 +53,14 @@
   .layout {
     grid-template-columns: 1fr;
   }
+  .stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The board keeps its minimum width; when the main column is narrow (context panel open, small window)
+   the step panel drops below the board instead of overlapping it. */
+@container (max-width: 1180px) {
   .stage {
     grid-template-columns: 1fr;
   }

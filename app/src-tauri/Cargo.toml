@@ -1,6 +1,6 @@
 [package]
 name = "magictrainer"
-version = "0.1.0"
+version = "1.0.0"
 description = "MagicTrainer — MTG deck strategy visualizer and trainer"
 authors = ["William Fischer <Goob Entertainment Co.>"]
 edition = "2021"
