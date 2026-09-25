@@ -126,7 +126,7 @@ describe("board state", () => {
     expect(last.ledger.life.opponent).toBe(40 - 2);
     expect(last.ledger.cardsInHand.you).toBeLessThan(7);
     const trigger = snaps.find((s) => s.pulse?.key === "you:Blood Artist");
-    expect(trigger?.pulse?.label).toMatch(/Each opponent loses life/);
+    expect(trigger?.pulse?.label).toMatch(/opponent loses 1 life/i);
     // Mana ledger resets each game turn and counts casts.
     const castIdx = tl.steps.findIndex((s) => s.cardName === "Blood Artist" && s.action === "cast");
     expect(snaps[castIdx + 1]!.ledger.manaSpentThisTurn).toBe(2);
@@ -156,11 +156,13 @@ describe("playline templates", () => {
     { patternId: "power-ramp-stompy", label: "Stompy", confidence: 0.8, roles: { ramp: ["Llanowar Elves", "Rampant Growth"], threat: ["Ghalta, Primal Hunger", "Craterhoof Behemoth"], overrun: ["Overrun"] }, rationale: "t" },
     { patternId: "prowess-tempo", label: "Prowess", confidence: 0.8, roles: { prowess: ["Monastery Swiftspear"], spells: ["Lightning Bolt", "Mutagenic Growth", "Lava Spike"], burn: ["Lava Spike"] }, rationale: "t" },
     { patternId: "artifact-aggro", label: "Affinity", confidence: 0.8, roles: { "cheap-artifacts": ["Ornithopter", "Memnite", "Springleaf Drum"], payoff: ["Cranial Plating"] }, rationale: "t" },
+    { patternId: "creature-aggro", label: "Aggro", confidence: 0.8, roles: { "cheap-threats": ["Goblin Guide", "Monastery Swiftspear", "Eidolon of the Great Revel"], tricks: ["Brute Strength"], reach: ["Lightning Bolt"] }, rationale: "t" },
+    { patternId: "stompy", label: "Stompy", confidence: 0.8, roles: { beaters: ["Pelt Collector", "Steel Leaf Champion"], pump: ["Vines of Vastwood", "Aspect of Hydra"], protection: ["Blossoming Defense"] }, rationale: "t" },
   ];
 
-  it("builds a numbered, turn-stamped playline for each of the six templates", () => {
+  it("builds a numbered, turn-stamped playline for each of the eight templates", () => {
     const lines: Playline[] = buildPlaylines(matches, "deck");
-    expect(lines).toHaveLength(6);
+    expect(lines).toHaveLength(8);
     for (const p of lines) {
       expect(p.steps.map((s) => s.step)).toEqual(p.steps.map((_, i) => i + 1));
       for (const s of p.steps) {
@@ -170,6 +172,19 @@ describe("playline templates", () => {
       expect(p.steps.some((s) => s.breakPoint)).toBe(true);
       expect(p.outcome).toBeTruthy();
     }
+  });
+
+  it("derives damage from printed power and casts commanders from the command zone", () => {
+    const power: Record<string, number> = { "Monastery Swiftspear": 1, "Goblin Guide": 2, "Eidolon of the Great Revel": 2, "Griselbrand": 7 };
+    const opts = { powerOf: (n: string) => power[n], hasKeyword: (n: string, k: string) => n === "Monastery Swiftspear" && k === "Haste", isCommander: (n: string) => n === "Blood Artist" };
+    const prowess = buildPlayline(matches[4]!, "d", opts)!;
+    expect(prowess.steps[1]).toMatchObject({ action: "attack", turn: 1, damage: 1 }); // haste attack on turn 1
+    const rean = buildPlayline(matches[2]!, "d", opts)!;
+    expect(rean.steps.find((s) => s.action === "attack")?.damage).toBe(7);
+    const aris = buildPlayline(aristocrats, "d", opts)!;
+    expect(aris.steps[0]).toMatchObject({ cardName: "Blood Artist", from: "command" });
+    const noPower = buildPlayline(matches[2]!, "d", {})!;
+    expect(noPower.steps.find((s) => s.action === "attack")?.damage).toBeUndefined();
   });
 
   it("returns null when a required role is empty", () => {

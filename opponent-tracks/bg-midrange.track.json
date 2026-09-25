@@ -73,21 +73,22 @@
           "action": "cast+resolve",
           "turn": 3,
           "phase": "main1",
-          "note": "Planeswalker: -2 makes you sacrifice a creature. An edict ignores hexproof and indestructible; it takes your worst creature only if you have more than one.",
-          "breakPoint": "Against an edict, keep a spare body (a token or a cheap creature) on the battlefield before you deploy the engine piece."
+          "note": "Planeswalker. With only Tarmogoyf on their side they will not use the −2 edict (each player sacrifices a creature — it would cost them the Goyf); they +1 instead: each player discards a card. Expect the edict the turn they have a spare token or a second creature.",
+          "breakPoint": "Against the +1, discard your worst card, never a role you have only one of. Against the −2 edict later, keep a spare body (a token or a cheap creature) on the battlefield before you deploy the engine piece."
         },
         {
           "step": 6,
           "actor": "opponent",
-          "cardName": "[your worst creature]",
-          "from": "battlefield",
+          "cardName": "[excess land]",
+          "from": "hand",
           "to": "graveyard",
-          "action": "sacrifice",
+          "action": "discard",
           "turn": 3,
           "phase": "main1",
           "causedBy": [
             "Liliana of the Veil"
-          ]
+          ],
+          "note": "Liliana's +1: each player discards a card. They pitch a spare land; you discard too (choose the card that is not part of your line)."
         },
         {
           "step": 7,

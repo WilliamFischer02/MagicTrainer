@@ -69,7 +69,7 @@
 /* React Flow theming through tokens (colorMode="dark" sets its own vars; override the surfaces). */
 .canvas :global(.react-flow) {
   --xy-background-color: var(--felt-2);
-  --xy-background-pattern-color: rgba(233, 223, 199, 0.12);
+  --xy-background-pattern-color: var(--line);
   --xy-controls-button-background-color: var(--panel);
   --xy-controls-button-background-color-hover: var(--panel-2);
   --xy-controls-button-color: var(--ink-2);
@@ -171,7 +171,7 @@
 }
 
 .hubCombo {
-  background: rgba(91, 155, 213, 0.16);
+  background: var(--info-soft);
   border-color: var(--info);
 }
 

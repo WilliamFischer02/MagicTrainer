@@ -34,6 +34,20 @@
   --danger-soft: rgba(211, 32, 42, 0.16);
   --info: #5b9bd5;
 
+  /* translucent surfaces (board + charts) — derived from the surfaces/ink above */
+  --panel-a35: rgba(26, 32, 40, 0.35);
+  --panel-a55: rgba(26, 32, 40, 0.55);
+  --felt-2-a90: rgba(11, 14, 18, 0.9);
+  --gold-a08: rgba(201, 162, 39, 0.08);
+  --gold-a25: rgba(201, 162, 39, 0.25);
+  --gold-a60: rgba(201, 162, 39, 0.6);
+  --ink-a05: rgba(233, 223, 199, 0.05);
+  --ink-a16: rgba(233, 223, 199, 0.16);
+  --info-soft: rgba(91, 155, 213, 0.16);
+  --ink-on-color: #ffffff;
+  --mana-w-ink: #4a4224;
+  --mana-b-badge: #2b2233;
+
   /* mana (Scryfall conventional) */
   --mana-w: #f9faf4;
   --mana-u: #0e68ab;

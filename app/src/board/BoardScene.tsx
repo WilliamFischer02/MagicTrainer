@@ -127,6 +127,20 @@ export function BoardScene({ snapshot, step, cardOf, reducedMotion }: BoardScene
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshot]);
 
+  // Window / container resize: re-baseline the measured rects so the next FLIP does not mix coordinate systems.
+  useEffect(() => {
+    const host = root.current;
+    if (!host || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      const { rects, zones } = measure();
+      prevRects.current = rects;
+      prevZoneRects.current = zones;
+    });
+    ro.observe(host);
+    return () => ro.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Draw arrows with a path-length sweep; static when motion is reduced.
   useEffect(() => {
     if (reducedMotion) return;
@@ -181,8 +195,8 @@ export function BoardScene({ snapshot, step, cardOf, reducedMotion }: BoardScene
           <div className={`${b.zone} ${b.hand}`} data-zone="you:hand">
             <div className={b.zoneHead}>
               <span title={`Hand — ${ZONE_CR.hand}`}>Hand</span>
-              <span className={b.zoneCount}>
-                {you.hand.length} shown · {snapshot.ledger.cardsInHand.you} total
+              <span className={b.zoneCount} title={`${you.hand.length} named cards shown of ${snapshot.ledger.cardsInHand.you} in hand`}>
+                {you.hand.length} / {snapshot.ledger.cardsInHand.you}
               </span>
             </div>
             <div className={b.fan}>
@@ -264,7 +278,7 @@ function classify(cards: ZoneCard[], cardOf: (n: string) => CardOracle | undefin
 }
 
 function BfRows({ rows, cardOf, size, highlight, pulse }: { rows: Record<RowKey, ZoneCard[]>; cardOf: (n: string) => CardOracle | undefined; size: "xs" | "sm"; highlight: (c: ZoneCard) => boolean; pulse?: BoardSnapshot["pulse"] }) {
-  const order: [RowKey, string][] = [["other", "Spells"], ["creatures", "Creatures"], ["lands", "Lands"]];
+  const order: [RowKey, string][] = [["other", "Other permanents"], ["creatures", "Creatures"], ["lands", "Lands"]];
   return (
     <>
       {order.map(([key, label]) => (
@@ -298,8 +312,8 @@ function Pile({ label, zoneKey, count, cr, faceDown }: { label: string; zoneKey:
         <span className={b.zoneCount}>{count}</span>
       </div>
       <div className={b.zoneBody}>
-        <div className={`${b.pile} ${count === 0 ? b.pileEmpty : ""}`} aria-label={`${count} cards in ${label.toLowerCase()}`}>
-          {faceDown !== undefined ? (count > 0 ? "🂠" : "—") : count}
+        <div className={`${b.pile} ${count === 0 ? b.pileEmpty : ""} ${faceDown !== undefined && count > 0 ? b.pileBack : ""}`} aria-label={`${count} cards in ${label.toLowerCase()}`}>
+          {count === 0 ? "—" : count}
         </div>
       </div>
     </div>
@@ -307,14 +321,14 @@ function Pile({ label, zoneKey, count, cr, faceDown }: { label: string; zoneKey:
 }
 
 function ZoneList({ label, zoneKey, cards, cardOf, cr, highlight, size = "xs" }: { label: string; zoneKey: string; cards: ZoneCard[]; cardOf: (n: string) => CardOracle | undefined; cr: string; highlight: (c: ZoneCard) => boolean; size?: "xs" | "sm" }) {
-  const shown = cards.slice(-3);
+  const shown = cards.slice(-2);
   return (
     <div className={b.zone} data-zone={zoneKey}>
       <div className={b.zoneHead}>
         <span title={`${label} — ${cr}`}>{label}</span>
         <span className={b.zoneCount}>{cards.length}</span>
       </div>
-      <div className={b.zoneBody}>
+      <div className={`${b.zoneBody} ${b.zoneStack}`}>
         {shown.length === 0 && <div className={`${b.pile} ${b.pileEmpty}`}>—</div>}
         {shown.map((c) => (
           <CardSprite key={c.key} card={c} oracle={cardOf(c.name)} size={size} highlight={highlight(c)} />

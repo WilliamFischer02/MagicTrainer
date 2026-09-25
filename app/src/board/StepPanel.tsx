@@ -1,7 +1,7 @@
 import { Fragment, type ReactNode } from "react";
 import type { BoardSnapshot } from "../core/trainer/boardState";
 import { citationsIn, PHASE_LABEL, type Timeline, type TimelineStep } from "../core/trainer/timeline";
-import type { CardOracle } from "../core/types";
+import type { CardOracle, Zone } from "../core/types";
 import b from "./board.module.css";
 
 /**
@@ -10,7 +10,10 @@ import b from "./board.module.css";
  * step and what to do instead. Opponent turns also show the track's board summary.
  */
 
+const ZONE_WORD: Record<Zone, string> = { library: "library", hand: "hand", stack: "the stack", battlefield: "the battlefield", graveyard: "graveyard", exile: "exile", command: "the command zone" };
+
 const ACTION_TITLE: Record<string, string> = {
+  "begins-on-battlefield": "Begins the game on the battlefield",
   cast: "Cast",
   resolve: "Resolves",
   "cast+resolve": "Cast and resolves",
@@ -48,7 +51,7 @@ export function StepPanel({
     return (
       <aside className={b.panel} aria-label="Step details">
         <div className={b.panelWhen}>Opening board</div>
-        <h3 className={b.panelTitle}>{timeline.playline.title}</h3>
+        <h2 className={b.panelTitle}>{timeline.playline.title}</h2>
         <p className={b.summary}>{timeline.playline.strategy.rationale}</p>
         {timeline.track && (
           <div className={b.panelSection}>
@@ -78,7 +81,7 @@ export function StepPanel({
         <span>· {PHASE_LABEL[step.phase ?? "main1"]}</span>
         <span>· step {step.index + 1}</span>
       </div>
-      <h3 className={b.panelTitle}>{title}</h3>
+      <h2 className={b.panelTitle}>{title}</h2>
       <div className={b.panelCards}>
         {oracle && <span>{oracle.typeLine}</span>}
         {cost !== undefined && cost > 0 && <span>· costs {cost} mana</span>}
@@ -89,7 +92,7 @@ export function StepPanel({
         ) : null}
         {step.from !== step.to && (
           <span>
-            · {step.from} → {step.to}
+            · {ZONE_WORD[step.from]} → {ZONE_WORD[step.to]}
           </span>
         )}
       </div>

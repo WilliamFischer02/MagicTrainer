@@ -575,11 +575,11 @@
   background: var(--mana-c);
 }
 
-.manaW { background: var(--mana-w); color: #4a4224; }
-.manaU { background: var(--mana-u); color: #fff; }
-.manaB { background: #2b2233; color: #e9dfc7; border-color: var(--line-strong); }
-.manaR { background: var(--mana-r); color: #fff; }
-.manaG { background: var(--mana-g); color: #fff; }
+.manaW { background: var(--mana-w); color: var(--mana-w-ink); }
+.manaU { background: var(--mana-u); color: var(--ink-on-color); }
+.manaB { background: var(--mana-b-badge); color: var(--ink); border-color: var(--line-strong); }
+.manaR { background: var(--mana-r); color: var(--ink-on-color); }
+.manaG { background: var(--mana-g); color: var(--ink-on-color); }
 
 .miniBar {
   position: relative;
@@ -616,7 +616,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  background: rgba(233, 223, 199, 0.16);
+  background: var(--ink-a16);
 }
 
 .miniVal {

@@ -72,7 +72,7 @@ export function mergeTimeline(playline: Playline, track: OpponentTrack | undefin
   return { steps, turns, playline, track, onThePlay };
 }
 
-/** Human label for a phase (CR 500.1 names). */
+/** Human labels: phases per CR 500.1; steps per CR 501.1 (beginning), 506.1 (combat), 512.1 (ending). */
 export const PHASE_LABEL: Record<Phase, string> = {
   untap: "Untap",
   upkeep: "Upkeep",

@@ -45,8 +45,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
   gap: var(--s-3);
-  min-height: 560px;
-  height: calc(100vh - 340px);
+  align-items: start;
 }
 
 @media (max-width: 1240px) {
@@ -55,6 +54,5 @@
   }
   .stage {
     grid-template-columns: 1fr;
-    height: auto;
   }
 }

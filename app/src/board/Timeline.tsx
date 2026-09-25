@@ -35,6 +35,8 @@ export function Timeline({
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable)) return;
+      // Space on a focused button must activate that button, not toggle playback.
+      if (e.key === " " && t && (t.tagName === "BUTTON" || t.tagName === "A")) return;
       if (e.key === "ArrowRight") {
         e.preventDefault();
         onPosition(Math.min(max, position + 1));
@@ -97,7 +99,6 @@ export function Timeline({
           onChange={(e) => onPosition(Number(e.target.value))}
           aria-label="Timeline position"
           aria-valuetext={step ? `Step ${position} of ${max}: ${step.action} ${step.cardName}` : "Opening board"}
-          list="mt-timeline-ticks"
         />
         <div className={b.position}>
           <span>{step ? `${step.actor === "you" ? "Your" : "Opponent's"} turn ${step.turn} · ${PHASE_LABEL[step.phase ?? "main1"]}` : "Opening board"}</span>

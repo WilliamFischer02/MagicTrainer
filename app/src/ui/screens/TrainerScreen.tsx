@@ -6,9 +6,10 @@ import { rulesGet } from "../../bridge/rules";
 import { detectStrategies, type ResolvedCard } from "../../core/strategy/detector";
 import { deriveSnapshots } from "../../core/trainer/boardState";
 import { mergeTimeline } from "../../core/trainer/timeline";
-import { buildPlaylines, isPermanentType } from "../../core/trajectory/templates";
+import { buildPlaylines, isPermanentType, printedPower } from "../../core/trajectory/templates";
 import type { CardOracle, Deck, Playline } from "../../core/types";
 import { defaultTrackFor, TRACK_LOAD_ERRORS, TRACKS } from "../../data/tracks";
+import { trackRealCardNames } from "../../core/opponent/schema";
 import { Button, Callout, Card, EmptyState, Page, Spinner, formatCount } from "../components";
 import { AlertIcon, DeckIcon, TrainerIcon } from "../icons";
 import { useCards, useDeck, useDecks, useNameIndex } from "../queries";
@@ -118,13 +119,45 @@ function Trainer({ deck, cards, deckPicker }: { deck: Deck; cards: ReadonlyMap<s
   }, [cards]);
   const cardOf = useCallback((name: string) => byName.get(name.toLowerCase()), [byName]);
 
-  const playlines = useMemo<Playline[]>(() => buildPlaylines(detectStrategies(resolved), deck.id, { isPermanent: (n) => isPermanentType(cardOf(n)?.typeLine) }), [resolved, deck.id, cardOf]);
+  const commanderNames = useMemo(() => new Set(deck.commanders.map((c) => c.name.toLowerCase())), [deck.commanders]);
+  const playlines = useMemo<Playline[]>(
+    () =>
+      buildPlaylines(detectStrategies(resolved), deck.id, {
+        isPermanent: (n) => isPermanentType(cardOf(n)?.typeLine),
+        powerOf: (n) => printedPower(cardOf(n)?.power),
+        hasKeyword: (n, kw) => cardOf(n)?.keywords.some((k) => k.toLowerCase() === kw.toLowerCase()) ?? false,
+        isCommander: (n) => commanderNames.has(n.toLowerCase()),
+        format: deck.format,
+      }),
+    [resolved, deck.id, deck.format, cardOf, commanderNames],
+  );
   const [playlineId, setPlaylineId] = useState<string | null>(params.get("playline"));
   const playline = playlines.find((p) => p.id === playlineId || p.id.endsWith(`:${playlineId}`)) ?? playlines[0];
   const [trackId, setTrackId] = useState<string | null>(params.get("track"));
   const track = TRACKS.find((x) => x.id === trackId) ?? defaultTrackFor(deck.format);
+  // Opponent cards are not in the deck: resolve the track's real names and fetch their oracle rows for art / types.
+  const index = useNameIndex();
+  const trackIds = useMemo(() => (track && index.data ? trackRealCardNames(track).map((n) => index.data!.resolve(n).oracleId).filter((x): x is string => !!x) : []), [track, index.data]);
+  const trackCards = useCards(trackIds);
+  const cardOfAny = useCallback(
+    (name: string) => {
+      const own = cardOf(name);
+      if (own) return own;
+      const lower = name.toLowerCase();
+      for (const c of trackCards.data?.values() ?? []) if (c.name.toLowerCase() === lower || c.name.split(" // ")[0]?.toLowerCase() === lower) return c;
+      return undefined;
+    },
+    [cardOf, trackCards.data],
+  );
   const [onThePlay, setOnThePlay] = useState(true);
-  const reducedMotion = useMemo(() => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false, []);
+  const [reducedMotion, setReducedMotion] = useState(() => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
+  useEffect(() => {
+    const mq = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!mq) return;
+    const onChange = () => setReducedMotion(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   const timeline = useMemo(() => (playline ? mergeTimeline(playline, track, { onThePlay }) : null), [playline, track, onThePlay]);
   const snapshots = useMemo(() => (timeline ? deriveSnapshots(timeline, deck, { cmcOf: (n) => cardOf(n)?.cmc }) : []), [timeline, deck, cardOf]);
@@ -196,17 +229,17 @@ function Trainer({ deck, cards, deckPicker }: { deck: Deck; cards: ReadonlyMap<s
         {deckPicker}
         <label className={t.control}>
           <span className={d.label}>Line</span>
-          <select className={d.select} value={playline.id} onChange={(e) => setPlaylineId(e.target.value)} aria-label="Playline">
+          <select className={d.select} value={playline.id} onChange={(e) => setPlaylineId(e.target.value)} aria-label="Playline" title={`${playline.title} — ${playline.strategy.label}`}>
             {playlines.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.title} — {p.strategy.label}
+                {p.title} ({p.strategy.label.split(" (")[0]})
               </option>
             ))}
           </select>
         </label>
         <label className={t.control}>
           <span className={d.label}>Opponent</span>
-          <select className={d.select} value={track?.id ?? ""} onChange={(e) => setTrackId(e.target.value)} aria-label="Opponent track">
+          <select className={d.select} value={track?.id ?? ""} onChange={(e) => setTrackId(e.target.value)} aria-label="Opponent track" title={track?.name}>
             {TRACKS.map((x) => (
               <option key={x.id} value={x.id}>
                 {x.name}
@@ -227,8 +260,8 @@ function Trainer({ deck, cards, deckPicker }: { deck: Deck; cards: ReadonlyMap<s
         </Callout>
       )}
       <div className={t.stage}>
-        <BoardScene snapshot={snapshot} step={step} cardOf={cardOf} reducedMotion={reducedMotion} />
-        <StepPanel timeline={timeline} step={step} snapshot={snapshot} cardOf={cardOf} onCite={onCite} />
+        <BoardScene snapshot={snapshot} step={step} cardOf={cardOfAny} reducedMotion={reducedMotion} />
+        <StepPanel timeline={timeline} step={step} snapshot={snapshot} cardOf={cardOfAny} onCite={onCite} />
       </div>
       <Timeline timeline={timeline} position={position} playing={playing} speed={speed} onPosition={setPosition} onTogglePlay={() => setPlaying((p) => !p)} onSpeed={setSpeed} />
       <Card>

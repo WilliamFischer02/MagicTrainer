@@ -32,7 +32,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Deck graph (React Flow 12): cards as nodes with art, strategy-role hubs, Spellbook combo clusters; deterministic core layout (`core/graph/deckGraph.ts`, 4 tests); hub cap selector — `DeckGraph.tsx`
 - [x] Export: decklist text (Moxfield/Arena/MTGO dialects) — `core/export/decklist.ts` (round-trip tested), copy + save dialog on the deck hero
 
-## Phase 3 — Deck Trainer MVP
+## Phase 3 — Deck Trainer MVP ✅ (2026-09-25; schematic templates, static tracks — see D-018)
 - [x] Board scene: 7 zones per side, card sprites (art crop), zone counters, life/mana HUD — `app/src/board/BoardScene.tsx` (FLIP moves + SVG arrows, D-006)
 - [x] Playline engine: merge user playline + opponent track by (turn, phase); scrubber; play/pause/step; speed — `core/trainer/{timeline,boardState}.ts`, `board/Timeline.tsx`
 - [x] Arrow/pulse renderers per `zone-trajectory-signatures.md`; reduced-motion mode — arrow kinds (draw/cast/remove/return/exile/attack), trigger pulses, ghost trails; `prefers-reduced-motion` → 0 ms
