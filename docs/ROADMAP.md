@@ -28,7 +28,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Import UI (drag-drop, format auto-detect, error report, unresolved-name fixer with autocomplete) — 2026-09-24, `DecksScreen.tsx`; six sample decks import with 0 unresolved
 - [ ] Collection view (grid/list, search, filters by color/type/tag/owned qty)
 - [x] Deck view: curve histogram, color sources vs pips, role coverage vs baseline, legality check — `core/math/deckStats.ts` (19 tests) + `DeckAnalysis.tsx`; commander art hero via `mtimg`
-- [ ] Strategy panel: detected archetypes/combos with rationale + near-miss suggestions (owned first, then Card Kingdom link/price)
+- [x] Strategy panel: detected archetypes/combos with rationale + near-miss suggestions (Card Kingdom search link + cheapest-printing price) — `StrategyPanel.tsx`; 14 patterns, golden tests on the six decks pass; "owned first" waits for the collection import
 - [ ] Deck graph (React Flow): cards as nodes, role edges, combo clusters
 - [ ] Export: decklist text (Moxfield/Arena dialects)
 

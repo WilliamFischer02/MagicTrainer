@@ -54,7 +54,7 @@ export interface CardOracle {
   /** Scryfall `produced_mana` (W/U/B/R/G/C) — mana this card can add. */
   producedMana?: string[];
   /** Scryfall `prices` (USD, TCGplayer market) — Q-004: shown with a Card Kingdom link. */
-  prices?: { usd?: number; usdFoil?: number };
+  prices?: { usd?: number; usdFoil?: number; /** Cheapest non-digital printing (from the printings table), the budget number. */ usdMin?: number };
   purchaseUris?: { cardkingdom?: string; tcgplayer?: string; cardmarket?: string };
   scryfallUri?: string;
 }

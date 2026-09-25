@@ -12,6 +12,9 @@ export class NodeDb implements DbClient {
   private readonly db: DatabaseSync;
   constructor(path: string) {
     this.db = new DatabaseSync(path, { readOnly: true });
+    // Several Vitest workers open the same WAL file at once; without a busy timeout the
+    // second opener's first statement fails with "database is locked" (seen 2026-09-24).
+    this.db.exec("PRAGMA busy_timeout = 10000;");
   }
   async query<T extends Row = Row>(sql: string, params: readonly SqlParam[] = []): Promise<T[]> {
     const bound = params.map((p) => (typeof p === "boolean" ? Number(p) : p));

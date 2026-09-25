@@ -1,5 +1,5 @@
 import type { CardOracle, Deck, DeckEntry, StrategyMatch } from "../types";
-import { PATTERNS, type PatternDef, type RoleDef } from "./patterns";
+import { PATTERNS, deckShape, type DeckShape, type PatternDef, type RoleDef } from "./patterns";
 
 export interface ResolvedCard {
   entry: DeckEntry;
@@ -32,7 +32,8 @@ export function roleMatches(role: RoleDef, card: CardOracle): boolean {
   return byTag || byText;
 }
 
-export function scorePattern(pattern: PatternDef, cards: ResolvedCard[]): StrategyMatch | null {
+export function scorePattern(pattern: PatternDef, cards: ResolvedCard[], shape: DeckShape = deckShape(cards.map((rc) => ({ card: rc.card, quantity: rc.entry.quantity })))): StrategyMatch | null {
+  if (pattern.gate && !pattern.gate(shape)) return null;
   const roles: Record<string, string[]> = {};
   let earned = 0;
   let possible = 0;
@@ -48,6 +49,8 @@ export function scorePattern(pattern: PatternDef, cards: ResolvedCard[]): Strate
   }
   const missingRequired = pattern.required.filter((r) => !(r in roles));
   if (missingRequired.length) return null;
+  // `anyOf`: at least one of these roles must also be filled (e.g. Voltron needs protection OR evasion).
+  if (pattern.anyOf?.length && !pattern.anyOf.some((r) => r in roles)) return null;
   const confidence = Math.round((earned / possible) * 100) / 100;
   const rationale = pattern.roles
     .map((r) => `${r.label}: ${roles[r.id]?.length ?? 0} card(s)`)
@@ -57,8 +60,9 @@ export function scorePattern(pattern: PatternDef, cards: ResolvedCard[]): Strate
 
 /** Run every pattern; return matches sorted by confidence. */
 export function detectStrategies(cards: ResolvedCard[], patterns: PatternDef[] = PATTERNS): StrategyMatch[] {
+  const shape = deckShape(cards.map((rc) => ({ card: rc.card, quantity: rc.entry.quantity })));
   return patterns
-    .map((p) => scorePattern(p, cards))
+    .map((p) => scorePattern(p, cards, shape))
     .filter((m): m is StrategyMatch => m !== null)
     .sort((a, b) => b.confidence - a.confidence);
 }

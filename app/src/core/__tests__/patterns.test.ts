@@ -26,6 +26,7 @@ describe("pattern definitions are well-formed", () => {
     it(p.id, () => {
       const ids = new Set(p.roles.map((r) => r.id));
       for (const req of p.required) expect(ids.has(req)).toBe(true);
+      for (const any of p.anyOf ?? []) expect(ids.has(any)).toBe(true);
       for (const r of p.roles) {
         expect(r.min).toBeGreaterThan(0);
         expect(r.weight).toBeGreaterThan(0);

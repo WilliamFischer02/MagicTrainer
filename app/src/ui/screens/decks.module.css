@@ -781,3 +781,113 @@
   color: var(--ink-3);
   font-size: var(--fs-2);
 }
+
+/* ---------- strategy panel ---------- */
+.matchList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.match {
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.match:last-child {
+  border-bottom: 0;
+}
+
+.matchHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.matchLabel {
+  font-weight: 600;
+  font-size: var(--fs-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matchConf {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.matchConf .miniBar {
+  width: 72px;
+}
+
+.matchWhy {
+  margin-top: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-2);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+}
+
+.rationale {
+  margin: 0 0 var(--s-2);
+  font-size: var(--fs-2);
+  color: var(--ink-2);
+}
+
+.roles {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-1);
+  font-size: var(--fs-2);
+}
+
+.roleItem {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: var(--s-2);
+}
+
+.roleItem dt {
+  color: var(--ink-3);
+  text-transform: capitalize;
+}
+
+.roleItem dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.missingRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2) var(--s-3);
+  margin-top: var(--s-1);
+  font-size: var(--fs-2);
+}
+
+.missingCard {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-1) var(--s-2);
+  max-width: 100%;
+  padding: 2px var(--s-2);
+  border-radius: var(--r-1);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+}
+
+.missingCard a {
+  white-space: nowrap;
+}
+
+.price {
+  font-family: var(--font-mono);
+  color: var(--gold-2);
+}

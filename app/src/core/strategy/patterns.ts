@@ -44,11 +44,44 @@ export interface PatternDef {
   roles: RoleDef[];
   /** Roles that MUST be filled for the pattern to fire at all. */
   required: string[];
+  /** At least ONE of these roles must also be filled (in addition to `required`). */
+  anyOf?: string[];
+  /** Whole-deck precondition (curve shape, creature share) evaluated before roles. */
+  gate?: (deck: DeckShape) => boolean;
   /** Id of a playline template in trajectory/templates.ts used to animate the pattern. */
   playline?: string;
 }
 
 const txt = (...res: RegExp[]) => res;
+
+/** Deck-level shape used by pattern gates; computed once per detection run. */
+export interface DeckShape {
+  nonland: number;
+  lands: number;
+  creatures: number;
+  /** Average mana value of nonland cards. */
+  averageMv: number;
+  /** creatures / nonland, 0..1. */
+  creatureShare: number;
+}
+
+export function deckShape(cards: readonly { card: CardOracle; quantity: number }[]): DeckShape {
+  let nonland = 0;
+  let lands = 0;
+  let creatures = 0;
+  let mv = 0;
+  for (const { card, quantity } of cards) {
+    const front = card.typeLine.split(" // ")[0] ?? card.typeLine;
+    if (/\bLand\b/.test(front)) {
+      lands += quantity;
+      continue;
+    }
+    nonland += quantity;
+    mv += card.cmc * quantity;
+    if (/\bCreature\b/.test(front)) creatures += quantity;
+  }
+  return { nonland, lands, creatures, averageMv: nonland ? mv / nonland : 0, creatureShare: nonland ? creatures / nonland : 0 };
+}
 
 export const PATTERNS: PatternDef[] = [
   {
@@ -65,7 +98,7 @@ export const PATTERNS: PatternDef[] = [
         label: "Sacrifice outlet",
         min: 1,
         weight: 3,
-        tags: ["sacrifice-outlet-creature", "sacrifice-outlet", "free-sacrifice-outlet"],
+        tags: ["sacrifice-outlet-creature", "repeatable-sacrifice-outlet", "free-sacrifice-outlet"],
         text: txt(/sacrifice (a|another) creature:/, /sacrifice a creature: /),
       },
       {
@@ -73,7 +106,7 @@ export const PATTERNS: PatternDef[] = [
         label: "Death-trigger payoff",
         min: 1,
         weight: 3,
-        tags: ["blood-artist-ability"],
+        tags: ["blood-artist-ability", "your-sacrifice-matters"],
         text: txt(/whenever (a|another) creature (you control )?dies,/, /whenever .* dies, (each opponent|target player) loses/),
       },
       {
@@ -82,7 +115,7 @@ export const PATTERNS: PatternDef[] = [
         min: 2,
         weight: 1,
         tags: ["repeatable-creature-tokens", "reanimate-self", "persist"],
-        text: txt(/create .* creature token/, /return .* from your graveyard to the battlefield/, /(undying|persist)/),
+        text: txt(/create .* creature token/, /return .* from your graveyard to the battlefield/, /\b(undying|persist)\b/),
       },
       {
         id: "recursion",
@@ -132,7 +165,7 @@ export const PATTERNS: PatternDef[] = [
     label: "Reanimator",
     family: "archetype",
     summary: "Put a huge creature into the graveyard early (discard, mill, self-sac) and return it to the battlefield cheaply.",
-    required: ["reanimate", "target"],
+    required: ["reanimate", "enabler", "target"],
     playline: "reanimate",
     roles: [
       {
@@ -183,7 +216,16 @@ export const PATTERNS: PatternDef[] = [
     required: ["prowess", "spells"],
     playline: "prowess-turn",
     roles: [
-      { id: "prowess", label: "Prowess / cast-trigger creatures", min: 4, weight: 3, tags: ["cast-trigger-you"], text: txt(/prowess/, /whenever you cast a noncreature spell/) },
+      {
+        id: "prowess",
+        label: "Prowess / noncreature-spell triggers",
+        min: 4,
+        weight: 3,
+        type: /creature/i,
+        tags: ["gives-prowess", "prowess-anthem"],
+        text: txt(/whenever you cast a noncreature spell/, /whenever you cast an instant or sorcery spell/),
+        custom: (c) => c.keywords.includes("Prowess") || /whenever you cast a noncreature spell|whenever you cast an instant or sorcery spell/i.test(c.oracleText ?? ""),
+      },
       { id: "spells", label: "Cheap instants/sorceries", min: 12, weight: 2, type: /instant|sorcery/i, custom: (c) => c.cmc <= 2 },
       { id: "burn", label: "Burn / reach", min: 4, weight: 1, tags: ["burn-any", "burn-player", "burn-creature"] },
     ],
@@ -217,10 +259,104 @@ export const PATTERNS: PatternDef[] = [
     family: "archetype",
     summary: "Load one creature with equipment/auras and protection; win via commander damage or a single lethal attacker.",
     required: ["boost"],
+    anyOf: ["protection", "evasion"],
     roles: [
       { id: "boost", label: "Equipment / auras", min: 6, weight: 3, type: /equipment|aura/i },
       { id: "protection", label: "Protection / hexproof grants", min: 2, weight: 2, tags: ["protects-creature", "gives-hexproof", "gives-indestructible"] },
       { id: "evasion", label: "Evasion grants", min: 2, weight: 1, tags: ["evasion", "gives-unblockable", "gives-flying"] },
+    ],
+  },
+  {
+    id: "creature-aggro",
+    label: "Creature aggro (beatdown)",
+    family: "archetype",
+    summary: "Many cheap creatures, curve out by turn 3, back them with tricks, haste, and burn to close. You are the beatdown.",
+    required: ["cheap-threats"],
+    anyOf: ["tricks", "reach", "removal"],
+    // Aggro is a curve, not a card count: mostly creatures and a low average mana value.
+    gate: (d) => d.creatureShare >= 0.5 && d.averageMv <= 3.0,
+    roles: [
+      { id: "cheap-threats", label: "Creatures at mana value ≤ 3", min: 14, weight: 3, type: /creature/i, custom: (c) => c.cmc <= 3 },
+      { id: "tricks", label: "Combat tricks / haste / mass pump", min: 4, weight: 1, tags: ["combat-trick", "gives-haste", "power-boost-to-all"] },
+      { id: "reach", label: "Burn to the face", min: 3, weight: 1, tags: ["burn-any", "burn-player"] },
+      { id: "removal", label: "Cheap removal", min: 3, weight: 1, tags: ["spot-removal", "removal-creature"], custom: (c) => c.cmc <= 2 },
+    ],
+  },
+  {
+    id: "stompy",
+    label: "Stompy (undercosted beaters + pump)",
+    family: "archetype",
+    summary: "Cheap creatures with outsized power, protected and pushed through with pump spells and auras. No ramp package — the curve is the plan.",
+    required: ["beaters", "pump"],
+    roles: [
+      { id: "beaters", label: "Power ≥ 3 at mana value ≤ 3", min: 8, weight: 3, type: /creature/i, custom: (c) => c.cmc <= 3 && Number(c.power) >= 3 },
+      {
+        id: "pump",
+        label: "Pump spells / auras / trample grants",
+        min: 6,
+        weight: 2,
+        tags: ["combat-trick", "synergy-aura", "gives-trample"],
+        text: txt(/gets \+\d+\/\+\d+ until end of turn/, /enchanted creature gets \+\d+\/\+\d+/),
+      },
+      { id: "protection", label: "Hexproof / protection tricks", min: 2, weight: 1, tags: ["protects-creature", "gives-hexproof", "gives-indestructible"] },
+    ],
+  },
+  {
+    id: "burn",
+    label: "Burn",
+    family: "archetype",
+    summary: "Point damage at the face: 12+ cheap burn spells plus a few hasty or damage-dealing creatures. Count to 20.",
+    required: ["burn"],
+    roles: [
+      { id: "burn", label: "Burn spells that can target players", min: 12, weight: 3, type: /instant|sorcery/i, tags: ["burn-any", "burn-player"] },
+      { id: "burn-creatures", label: "Creatures that deal damage", min: 2, weight: 1, type: /creature/i, tags: ["burn-any", "burn-player", "gives-haste"] },
+    ],
+  },
+  {
+    id: "spellslinger",
+    label: "Spellslinger (instants & sorceries matter)",
+    family: "archetype",
+    summary: "Payoffs that trigger on casting instants and sorceries, a deck that is mostly spells, and cost reducers or storm to chain them.",
+    required: ["payoff", "spells"],
+    roles: [
+      {
+        id: "payoff",
+        label: "Instant/sorcery cast payoffs",
+        min: 4,
+        weight: 3,
+        tags: ["magecraft", "second-spell-matters"],
+        text: txt(/whenever you cast an instant or sorcery spell/, /whenever you cast or copy an instant or sorcery spell/, /whenever you cast a noncreature spell/),
+      },
+      { id: "spells", label: "Instants and sorceries", min: 20, weight: 2, type: /instant|sorcery/i },
+      { id: "chain", label: "Cost reducers / storm", min: 1, weight: 1, tags: ["cost-reducer", "affinity-for-spells", "storm-count-matters", "gives-storm"] },
+    ],
+  },
+  {
+    id: "control",
+    label: "Control (answers first, win late)",
+    family: "archetype",
+    summary: "Counterspells and sweepers hold the game, card draw pulls ahead, a few resilient finishers close. You are not the beatdown.",
+    required: ["removal"],
+    anyOf: ["counters", "sweepers"],
+    // Control is creature-light; a Commander value pile with sweepers and removal is not control.
+    gate: (d) => d.creatureShare <= 0.35,
+    roles: [
+      { id: "counters", label: "Counterspells", min: 4, weight: 2, tags: ["counterspell"] },
+      { id: "sweepers", label: "Sweepers", min: 2, weight: 2, tags: ["sweeper"] },
+      { id: "removal", label: "Spot removal", min: 6, weight: 1, tags: ["spot-removal"] },
+      { id: "draw", label: "Card advantage", min: 4, weight: 1, tags: ["draw-engine", "burst-draw"] },
+      { id: "finisher", label: "Late-game finishers", min: 2, weight: 1, type: /creature|planeswalker/i, custom: (c) => c.cmc >= 4 },
+    ],
+  },
+  {
+    id: "counters-midrange",
+    label: "+1/+1 counters",
+    family: "archetype",
+    summary: "Creatures and spells that put +1/+1 counters everywhere, with payoffs that scale off counters (Hardened Scales style).",
+    required: ["payoff", "enablers"],
+    roles: [
+      { id: "payoff", label: "Counters-matter payoffs", min: 3, weight: 3, tags: ["counters-matter", "pp-counters-matter"] },
+      { id: "enablers", label: "Ways to place +1/+1 counters", min: 6, weight: 2, tags: ["gives-pp-counters", "repeatable-pp-counters", "repeatable-proliferate"] },
     ],
   },
 ];

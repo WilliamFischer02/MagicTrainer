@@ -6,6 +6,7 @@ import { AlertIcon } from "../icons";
 import { useCards } from "../queries";
 import d from "./decks.module.css";
 import s from "./screens.module.css";
+import { StrategyPanel } from "./StrategyPanel";
 
 /**
  * Deck Builder analysis: curve, color pips vs sources, type mix, role coverage vs the
@@ -59,6 +60,8 @@ export function DeckAnalysis({ deck }: { deck: Deck }) {
           {missing.length} line{missing.length === 1 ? " is" : "s are"} not matched to a card and {missing.length === 1 ? "is" : "are"} excluded from these numbers: {missing.map((m) => m.name).join(", ")}.
         </Callout>
       )}
+
+      <StrategyPanel deck={deck} cards={cards.data} />
 
       <div className={d.analysisGrid}>
         <Card title="Mana curve">

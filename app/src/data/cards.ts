@@ -38,6 +38,7 @@ export const CardRowSchema = z.object({
   image_art_crop: z.string().nullable(),
   produced_mana: JsonText.nullable(),
   prices: JsonText.nullable(),
+  price_usd_min: z.number().nullable(),
   purchase_uris: JsonText.nullable(),
   scryfall_uri: z.string().nullable(),
   tags_json: JsonText.nullable(),
@@ -96,7 +97,10 @@ export function rowToCardOracle(raw: unknown): CardOracle {
     printingId: r.repr_printing_id ?? undefined,
     layout: r.layout,
     producedMana: parseJson(r.produced_mana, z.array(z.string()), []),
-    prices: prices.usd !== undefined || prices.usd_foil !== undefined ? { usd: prices.usd, usdFoil: prices.usd_foil } : undefined,
+    prices:
+      prices.usd !== undefined || prices.usd_foil !== undefined || r.price_usd_min !== null
+        ? { usd: prices.usd, usdFoil: prices.usd_foil, usdMin: r.price_usd_min ?? undefined }
+        : undefined,
     purchaseUris: Object.keys(uris).length ? uris : undefined,
     scryfallUri: r.scryfall_uri ?? undefined,
   };
@@ -108,6 +112,7 @@ const CARD_SELECT = `
          c.legalities, c.edhrec_rank, c.game_changer, c.repr_printing_id,
          c.image_small, c.image_normal, c.image_large, c.image_art_crop,
          c.produced_mana, c.prices, c.purchase_uris, c.scryfall_uri,
+         (SELECT MIN(p.price_usd) FROM printings p WHERE p.oracle_id = c.oracle_id AND p.price_usd IS NOT NULL AND p.digital = 0) AS price_usd_min,
          (SELECT json_group_array(slug) FROM (
             SELECT DISTINCT t.slug
             FROM card_oracle_tags cot

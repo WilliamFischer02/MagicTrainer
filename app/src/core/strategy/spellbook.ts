@@ -199,7 +199,11 @@ export function nearMissCombos(results: FindMyCombosResults, deckNames: readonly
       out.push({ variant, match: { ...match, rationale: `${match.rationale}; missing ${missing.join(", ")}` }, missing, reason });
     }
   }
-  out.sort((a, b) => a.missing.length - b.missing.length || (b.variant.popularity ?? 0) - (a.variant.popularity ?? 0));
+  // In-identity near misses first (a deck can actually add those), then fewest missing, then popularity.
+  const reasonRank: Record<NearMissCombo["reason"], number> = { almost: 0, "changing-commanders": 1, "adding-colors": 2, "adding-colors-and-changing-commanders": 3 };
+  out.sort(
+    (a, b) => reasonRank[a.reason] - reasonRank[b.reason] || a.missing.length - b.missing.length || (b.variant.popularity ?? 0) - (a.variant.popularity ?? 0),
+  );
   return out.slice(0, limit);
 }
 
