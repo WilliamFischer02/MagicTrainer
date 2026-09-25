@@ -6,6 +6,9 @@ import { DataScreen } from "./screens/DataScreen";
 import { DecksScreen } from "./screens/DecksScreen";
 import { RulesScreen } from "./screens/RulesScreen";
 import { TrainerScreen } from "./screens/TrainerScreen";
+import { OnboardingScreen } from "./screens/OnboardingScreen";
+import { useOnline } from "./hooks/useBulkImport";
+import { useState } from "react";
 import s from "./shell.module.css";
 import { useDbStatus } from "./queries";
 import { ROUTES, useAppStore, type Route } from "./store";
@@ -19,9 +22,21 @@ const ROUTE_ICON: Record<Route, typeof DeckIcon> = {
 
 export function AppShell() {
   const { mode, route, setMode, navigate } = useAppStore();
+  const db = useDbStatus();
+  const online = useOnline();
+  const [skippedOnboarding, setSkippedOnboarding] = useState(() => new URLSearchParams(globalThis.location?.search ?? "").get("onboarding") === "skip");
+  const forceOnboarding = new URLSearchParams(globalThis.location?.search ?? "").get("onboarding") === "1";
+  const noData = db.data ? !db.data.exists || (db.data.counts.cards ?? 0) === 0 : false;
+  const showOnboarding = forceOnboarding || (noData && !skippedOnboarding);
 
   return (
     <div className={s.shell}>
+      {showOnboarding && <OnboardingScreen onSkip={() => setSkippedOnboarding(true)} onDone={() => setSkippedOnboarding(true)} />}
+      {!online && (
+        <div className={s.offline} role="status">
+          Offline — card data and saved decks work; Spellbook lookups and new card art wait for a connection.
+        </div>
+      )}
       <nav className={s.rail} aria-label="Primary">
         <div className={s.brand}>
           <Sigil />
@@ -54,7 +69,7 @@ export function AppShell() {
 
         <div className={s.railFooter}>
           <DataPill />
-          <span className={s.version}>v0.1.0 · Phase 1</span>
+          <span className={s.version}>v{__APP_VERSION__}</span>
         </div>
       </nav>
 

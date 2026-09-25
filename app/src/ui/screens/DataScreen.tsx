@@ -1,68 +1,22 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
-import { importBulk, onBulkProgress, type BulkImportResult, type BulkPart, type Progress } from "../../bridge/bulk";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { type BulkImportResult, type Progress } from "../../bridge/bulk";
+import { logStatus } from "../../bridge/log";
 import { Button, Callout, Card, EmptyState, ExternalLink, Page, Spinner, formatBytes, formatCount, formatDate } from "../components";
 import { AlertIcon, CheckIcon, DatabaseIcon, DownloadIcon, FolderIcon, TrashIcon } from "../icons";
-import { invalidateCardData, useClearComboCache, useClearImageCache, useComboCacheStatus, useDbStatus, useImageCacheStatus } from "../queries";
+import { useClearComboCache, useClearImageCache, useComboCacheStatus, useDbStatus, useImageCacheStatus } from "../queries";
+import { STAGE_LABEL, useBulkImport } from "../hooks/useBulkImport";
 import { usePrefs } from "../store";
 import s from "./screens.module.css";
 
-type Run = { kind: "idle" } | { kind: "running"; progress: Progress | null; startedAt: number } | { kind: "done"; result: BulkImportResult } | { kind: "error"; message: string };
-
-const STAGE_LABEL: Record<string, string> = {
-  "download:scryfall/oracle_cards.jsonl.gz": "Downloading oracle cards",
-  "download:scryfall/default_cards.jsonl.gz": "Downloading printings",
-  "download:scryfall/rulings.jsonl.gz": "Downloading rulings",
-  "download:scryfall/oracle_tags.jsonl.gz": "Downloading oracle tags",
-  "download:spellbook/variants.json.gz": "Downloading Commander Spellbook combos",
-  "import:oracle_cards": "Importing oracle cards",
-  "import:printings": "Importing printings",
-  "import:rulings": "Importing rulings",
-  "import:oracle_tags": "Importing oracle tags",
-  "import:spellbook": "Importing combos",
-};
-
-const SCRYFALL_PARTS: BulkPart[] = ["oracle_cards", "printings", "rulings", "oracle_tags"];
-
 export function DataScreen() {
-  const queryClient = useQueryClient();
   const { data: db, error: dbErr } = useDbStatus();
   const dbError = dbErr ? (dbErr instanceof Error ? dbErr.message : String(dbErr)) : null;
-  const [run, setRun] = useState<Run>({ kind: "idle" });
+  const { run, start: startImport, reset, busy } = useBulkImport();
   const [withCombos, setWithCombos] = useState(false);
-  const unlisten = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
-    let alive = true;
-    onBulkProgress((p) => {
-      if (!alive) return;
-      setRun((r) => (r.kind === "running" ? { ...r, progress: p } : r));
-    })
-      .then((fn) => {
-        if (alive) unlisten.current = fn;
-        else fn();
-      })
-      .catch((e: unknown) => console.error("bulk-progress listen failed", e));
-    return () => {
-      alive = false;
-      unlisten.current?.();
-    };
-  }, []);
+  const start = (source: "download" | "dir") => startImport(source, withCombos);
 
-  const start = async (source: "download" | "dir") => {
-    const parts: BulkPart[] = withCombos ? [...SCRYFALL_PARTS, "spellbook"] : SCRYFALL_PARTS;
-    setRun({ kind: "running", progress: null, startedAt: Date.now() });
-    try {
-      const result = await importBulk(source === "download" ? { kind: "download" } : { kind: "dir" }, parts);
-      setRun({ kind: "done", result });
-    } catch (e) {
-      setRun({ kind: "error", message: e instanceof Error ? e.message : String(e) });
-    } finally {
-      await invalidateCardData(queryClient);
-    }
-  };
-
-  const busy = run.kind === "running";
   const hasData = !!db?.exists && (db.counts.cards ?? 0) > 0;
 
   return (
@@ -167,7 +121,7 @@ export function DataScreen() {
                   <Button size="sm" onClick={() => void start("download")}>
                     Retry download
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setRun({ kind: "idle" })}>
+                  <Button size="sm" variant="ghost" onClick={reset}>
                     Dismiss
                   </Button>
                 </div>
@@ -180,6 +134,8 @@ export function DataScreen() {
 
         <CacheCard />
 
+        <LogCard />
+
         <Card title="Sources & credits">
           <p className={s.lede} style={{ marginBottom: 0 }}>
             Card data and images © Wizards of the Coast, provided by <ExternalLink href="https://scryfall.com">Scryfall</ExternalLink> (oracle text, rulings, community oracle
@@ -189,6 +145,28 @@ export function DataScreen() {
         </Card>
       </div>
     </Page>
+  );
+}
+
+function LogCard() {
+  const log = useQuery({ queryKey: ["app-log"], queryFn: () => logStatus(20), staleTime: 10 * 1000 });
+  return (
+    <Card title="Diagnostics log">
+      <p className={s.lede}>Errors are written to a local log file only (nothing is uploaded). Attach it to a bug report if something goes wrong.</p>
+      {log.data && (
+        <>
+          <p className={s.path}>
+            {log.data.path} · {formatBytes(log.data.bytes)}
+          </p>
+          {log.data.tail.length > 0 && <pre className={s.logTail}>{log.data.tail.slice(-8).join("\n")}</pre>}
+        </>
+      )}
+      {log.error && (
+        <Callout tone="danger" icon={<AlertIcon />}>
+          Could not read the log: {log.error instanceof Error ? log.error.message : String(log.error)}
+        </Callout>
+      )}
+    </Card>
   );
 }
 

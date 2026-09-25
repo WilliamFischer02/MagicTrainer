@@ -6,10 +6,12 @@
 //! - `net`        User-Agent, HTTP agent, rate limiter shared by every outbound path
 //! - `images`     card-image disk cache behind the `mtimg://` custom protocol
 //! - `spellbook_api` Commander Spellbook `find-my-combos` client with a 24 h disk cache
+//! - `applog`     local diagnostics log (Q-011) + Rust panic hook
 //! - `collection` collection CSV rows → `collection` table (replace/append/clear)
 //! - `decks`      deck save/delete + import-file reading (writes; reads go through `db_query`)
 //! - `commands`   the Tauri command surface
 
+pub mod applog;
 pub mod collection;
 pub mod commands;
 pub mod db;
@@ -34,6 +36,8 @@ pub fn run() {
         .register_asynchronous_uri_scheme_protocol(images::SCHEME, images::handle_protocol)
         .setup(|app| {
             let state = commands::AppState::from_app(app.handle())?;
+            app.manage(applog::AppLog::new(&state.data_dir));
+            applog::install_panic_hook(app.handle());
             app.manage(images::ImageCache::new(state.cache_dir.join("images")));
             app.manage(spellbook_api::ComboClient::new(state.cache_dir.join("spellbook")));
             app.manage(state);
@@ -57,6 +61,8 @@ pub fn run() {
             decks::write_text_file,
             collection::collection_import,
             collection::collection_clear,
+            applog::log_event,
+            applog::log_status,
             rules::rules_status,
             rules::rules_search,
             rules::rules_get,

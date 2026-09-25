@@ -276,3 +276,19 @@
   background: var(--panel-2);
   color: var(--ink);
 }
+
+/* ---------- offline banner ---------- */
+.offline {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  padding: var(--s-1) var(--s-4);
+  border-radius: 0 0 var(--r-2) var(--r-2);
+  background: var(--warn);
+  color: var(--ink-on-gold);
+  font-size: var(--fs-1);
+  font-weight: 600;
+  box-shadow: var(--shadow-1);
+}
