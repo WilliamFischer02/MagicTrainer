@@ -146,6 +146,14 @@ export interface TrajectoryStep {
   /** Turn number and phase this step happens in. */
   turn?: number;
   phase?: Phase;
+  /** Damage dealt to the other player by this step (attack / burn), for the life ledger. */
+  damage?: number;
+  /** Explicit life changes (drain loops, lifegain triggers): positive = gain. */
+  lifeChange?: { you?: number; opponent?: number };
+  /** Mana paid for this step when it is not simply the card's mana value (e.g. alternative costs). */
+  manaSpent?: number;
+  /** Training payload: the interaction that stops this step and what to do instead. */
+  breakPoint?: string;
 }
 
 export type Phase =
