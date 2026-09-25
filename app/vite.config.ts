@@ -28,5 +28,7 @@ export default defineConfig(() => ({
       // 3. tell Vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],
     },
+    // 4. opponent tracks live at the repo root (/opponent-tracks); allow serving them in dev.
+    fs: { allow: [".."] },
   },
 }));

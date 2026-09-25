@@ -5,6 +5,7 @@ import { CollectionScreen } from "./screens/CollectionScreen";
 import { DataScreen } from "./screens/DataScreen";
 import { DecksScreen } from "./screens/DecksScreen";
 import { RulesScreen } from "./screens/RulesScreen";
+import { TrainerScreen } from "./screens/TrainerScreen";
 import s from "./shell.module.css";
 import { useDbStatus } from "./queries";
 import { ROUTES, useAppStore, type Route } from "./store";
@@ -58,7 +59,7 @@ export function AppShell() {
       </nav>
 
       <main className={s.main}>
-        {route === "decks" && <DecksScreen />}
+        {route === "decks" && (mode === "trainer" ? <TrainerScreen /> : <DecksScreen />)}
         {route === "collection" && <CollectionScreen />}
         {route === "rules" && <RulesScreen />}
         {route === "settings" && <DataScreen />}

@@ -31,7 +31,12 @@ $deadline = (Get-Date).AddSeconds($TimeoutSec)
 $hwnd = [IntPtr]::Zero
 while ((Get-Date) -lt $deadline) {
   $p = Get-Process -Name $Process -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
-  if ($p -and [Win32]::IsWindowVisible($p.MainWindowHandle)) { $hwnd = $p.MainWindowHandle; break }
+  if ($p -and [Win32]::IsWindowVisible($p.MainWindowHandle)) {
+    # Ignore transient tiny/helper windows (a 16x16 handle shows up while WebView2 initializes).
+    $probe = New-Object Win32+RECT
+    [void][Win32]::GetWindowRect($p.MainWindowHandle, [ref]$probe)
+    if (($probe.Right - $probe.Left) -ge 400 -and ($probe.Bottom - $probe.Top) -ge 300) { $hwnd = $p.MainWindowHandle; break }
+  }
   Start-Sleep -Milliseconds 500
 }
 if ($hwnd -eq [IntPtr]::Zero) { throw "No visible window for process '$Process' within $TimeoutSec s" }

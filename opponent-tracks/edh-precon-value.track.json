@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "id": "edh-precon-value",
+  "name": "Commander precon value (ramp, engines, one removal a turn)",
+  "archetype": "midrange",
+  "description": "The politics-free Commander baseline: a preconstructed-style deck that ramps on turns 2–3, lands its commander on turn 4, draws two cards a turn from an engine, points one removal spell at your best permanent each turn, and wraths on turn 6 when the board gets scary. Teaches which of your pieces to expose first and when a Commander table will sweep.",
+  "turns": [
+    {
+      "turn": 1,
+      "boardSummary": "Command Tower, Sol Ring: three mana available next turn",
+      "events": [
+        { "step": 1, "actor": "opponent", "cardName": "Command Tower", "from": "hand", "to": "battlefield", "action": "play-land", "turn": 1, "phase": "main1" },
+        { "step": 2, "actor": "opponent", "cardName": "Sol Ring", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 1, "phase": "main1", "note": "Turn-1 Sol Ring: they are a turn ahead of curve for the rest of the game." }
+      ]
+    },
+    {
+      "turn": 2,
+      "boardSummary": "2 lands, Sol Ring, Arcane Signet: five mana next turn",
+      "events": [
+        { "step": 3, "actor": "opponent", "cardName": "Arcane Signet", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 2, "phase": "main1" }
+      ]
+    },
+    {
+      "turn": 3,
+      "boardSummary": "3 lands + 2 rocks; Cultivate fetched a basic and put one in hand",
+      "events": [
+        { "step": 4, "actor": "opponent", "cardName": "Cultivate", "from": "hand", "to": "graveyard", "action": "cast+resolve", "turn": 3, "phase": "main1", "note": "Land ramp does not die to a sweeper. By turn 4 they have seven mana." },
+        { "step": 5, "actor": "opponent", "cardName": "Forest", "from": "library", "to": "battlefield", "action": "tutor", "turn": 3, "phase": "main1", "causedBy": ["Cultivate"] }
+      ]
+    },
+    {
+      "turn": 4,
+      "boardSummary": "Commander on the battlefield, seven mana, removal held up",
+      "events": [
+        { "step": 6, "actor": "opponent", "cardName": "[commander]", "from": "command", "to": "battlefield", "action": "cast+resolve", "turn": 4, "phase": "main1", "note": "Cast from the command zone (CR 903.8). Expect it back every time it dies, taxed by two more mana each cast." },
+        { "step": 7, "actor": "opponent", "cardName": "Swords to Plowshares", "from": "hand", "to": "stack", "action": "cast", "turn": 4, "phase": "end", "note": "One white mana, instant speed, exiles your best creature at your end step.", "breakPoint": "Decision point: they hold up one white on your turn. Lead with the creature you can afford to lose and keep the engine piece until they tap low." }
+      ]
+    },
+    {
+      "turn": 5,
+      "boardSummary": "Card-draw engine online, drawing two extra cards a turn",
+      "events": [
+        { "step": 8, "actor": "opponent", "cardName": "[draw engine]", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 5, "phase": "main1", "note": "Two extra cards a turn. From here the precon out-cards you unless your line ends the game.", "breakPoint": "Removal on the engine is worth more than removal on the commander; the commander comes back, the engine does not." },
+        { "step": 9, "actor": "opponent", "cardName": "Beast Within", "from": "hand", "to": "stack", "action": "cast", "turn": 5, "phase": "main2", "note": "Three-mana instant that destroys any permanent and gives its controller a 3/3 Beast. It will hit your most important noncreature piece." }
+      ]
+    },
+    {
+      "turn": 6,
+      "boardSummary": "Wrath of God: every creature dies; the table rebuilds from hand",
+      "events": [
+        { "step": 10, "actor": "opponent", "cardName": "Wrath of God", "from": "hand", "to": "stack", "action": "cast", "turn": 6, "phase": "main1", "note": "Four-mana sweeper: destroy all creatures, they can't be regenerated. Enchantment- and artifact-based engines survive.", "breakPoint": "Decision point: a Commander table sweeps around turn 6. Hold two creatures back, or win before this turn, or make the sweeper hurt them more (death triggers, tokens that come back)." },
+        { "step": 11, "actor": "opponent", "cardName": "[all your creatures]", "from": "battlefield", "to": "graveyard", "action": "destroy", "turn": 6, "phase": "main1", "causedBy": ["Wrath of God"] }
+      ]
+    },
+    {
+      "turn": 7,
+      "boardSummary": "Commander recast, the engine still drawing; they take over unless you rebuild faster",
+      "events": [
+        { "step": 12, "actor": "opponent", "cardName": "[commander]", "from": "command", "to": "battlefield", "action": "cast+resolve", "turn": 7, "phase": "main1", "note": "Commander tax: two more mana than last time (CR 903.8)." }
+      ]
+    },
+    {
+      "turn": 8,
+      "boardSummary": "Commander attacking every turn; the engine keeps them ahead on cards",
+      "events": [
+        { "step": 13, "actor": "opponent", "cardName": "[commander]", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 8, "phase": "declare-attackers", "damage": 5 }
+      ]
+    }
+  ]
+}

@@ -11,10 +11,27 @@ import type { Playline, StrategyMatch, TrajectoryStep } from "../types";
  * the interaction that stops the step and what to do instead.
  */
 
-type Template = (m: StrategyMatch, deckId: string) => Playline | null;
+export interface TemplateOptions {
+  /** True when the named card is a permanent (creature/artifact/enchantment/planeswalker/land). Lets templates avoid
+   *  putting a sorcery "outlet" onto the battlefield. Unknown → treated as a permanent. */
+  isPermanent?: (cardName: string) => boolean | undefined;
+}
 
-const first = (m: StrategyMatch, role: string) => m.roles[role]?.[0];
-const nth = (m: StrategyMatch, role: string, i: number) => m.roles[role]?.[i];
+type Template = (m: StrategyMatch, deckId: string, opts: TemplateOptions) => Playline | null;
+
+let currentOpts: TemplateOptions = {};
+/** First role member; with `permanent`, the first member that is (or may be) a permanent. */
+const first = (m: StrategyMatch, role: string, permanent = false) => {
+  const names = m.roles[role] ?? [];
+  if (!permanent || !currentOpts.isPermanent) return names[0];
+  return names.find((n) => currentOpts.isPermanent!(n) !== false) ?? names[0];
+};
+const nth = (m: StrategyMatch, role: string, i: number, permanent = false) => {
+  const names = m.roles[role] ?? [];
+  if (!permanent || !currentOpts.isPermanent) return names[i];
+  const perms = names.filter((n) => currentOpts.isPermanent!(n) !== false);
+  return perms[i] ?? names[i];
+};
 
 function step(partial: Omit<TrajectoryStep, "step" | "actor"> & { actor?: "you" | "opponent" }): TrajectoryStep {
   return { step: 0, actor: partial.actor ?? "you", ...partial };
@@ -26,9 +43,9 @@ function number(steps: TrajectoryStep[]): TrajectoryStep[] {
 
 export const TEMPLATES: Record<string, Template> = {
   "aristocrats-loop": (m, deckId) => {
-    const outlet = first(m, "outlet");
-    const payoff = first(m, "payoff");
-    const fodder = first(m, "fodder") ?? "a creature";
+    const outlet = first(m, "outlet", true);
+    const payoff = first(m, "payoff", true);
+    const fodder = first(m, "fodder", true) ?? "a creature";
     const recursion = first(m, "recursion");
     if (!outlet || !payoff) return null;
     const steps = [
@@ -54,6 +71,7 @@ export const TEMPLATES: Record<string, Template> = {
       steps.push(
         step({ cardName: recursion, from: "hand", to: "stack", action: "cast", turn: 5, phase: "main1" }),
         step({ cardName: fodder, from: "graveyard", to: "battlefield", action: "reanimate", causedBy: [recursion], turn: 5, phase: "main1", note: "Back to the battlefield as a new object (CR 400.7); sacrifice it again.", breakPoint: "Graveyard hate (exile in response) breaks the recursion half; the outlet + payoff still work with fresh creatures." }),
+        step({ cardName: recursion, from: "stack", to: currentOpts.isPermanent?.(recursion) === false ? "graveyard" : "battlefield", action: "resolve", turn: 5, phase: "main1" }),
         step({ cardName: fodder, from: "battlefield", to: "graveyard", action: "sacrifice", causedBy: [outlet], turn: 5, phase: "main1", lifeChange: { opponent: -1, you: 1 } }),
       );
     }
@@ -100,10 +118,10 @@ export const TEMPLATES: Record<string, Template> = {
   },
 
   "ramp-overrun": (m, deckId) => {
-    const ramp1 = first(m, "ramp");
-    const ramp2 = nth(m, "ramp", 1) ?? ramp1;
-    const threat = first(m, "threat");
-    const threat2 = nth(m, "threat", 1);
+    const ramp1 = first(m, "ramp", true);
+    const ramp2 = nth(m, "ramp", 1, true) ?? ramp1;
+    const threat = first(m, "threat", true);
+    const threat2 = nth(m, "threat", 1, true);
     const overrun = first(m, "overrun");
     if (!ramp1 || !threat) return null;
     const steps = [
@@ -125,7 +143,7 @@ export const TEMPLATES: Record<string, Template> = {
   },
 
   "prowess-turn": (m, deckId) => {
-    const creature = first(m, "prowess");
+    const creature = first(m, "prowess", true);
     const spell1 = first(m, "spells");
     const spell2 = nth(m, "spells", 1) ?? spell1;
     const burn = first(m, "burn") ?? nth(m, "spells", 2);
@@ -149,7 +167,7 @@ export const TEMPLATES: Record<string, Template> = {
 
   "affinity-turn": (m, deckId) => {
     const cheap = m.roles["cheap-artifacts"] ?? [];
-    const payoff = first(m, "payoff");
+    const payoff = first(m, "payoff", true);
     if (cheap.length < 2 || !payoff) return null;
     const [a1, a2, a3] = cheap;
     const steps = [
@@ -164,20 +182,32 @@ export const TEMPLATES: Record<string, Template> = {
   },
 };
 
-export function buildPlayline(match: StrategyMatch, deckId: string): Playline | null {
+export function buildPlayline(match: StrategyMatch, deckId: string, opts: TemplateOptions = {}): Playline | null {
   const key = PATTERN_TO_TEMPLATE[match.patternId];
   if (!key) return null;
-  return TEMPLATES[key]?.(match, deckId) ?? null;
+  currentOpts = opts;
+  try {
+    return TEMPLATES[key]?.(match, deckId, opts) ?? null;
+  } finally {
+    currentOpts = {};
+  }
 }
 
 /** Every playline the detector's matches can animate, in match order. */
-export function buildPlaylines(matches: readonly StrategyMatch[], deckId: string): Playline[] {
+export function buildPlaylines(matches: readonly StrategyMatch[], deckId: string, opts: TemplateOptions = {}): Playline[] {
   const out: Playline[] = [];
   for (const m of matches) {
-    const p = buildPlayline(m, deckId);
+    const p = buildPlayline(m, deckId, opts);
     if (p) out.push(p);
   }
   return out;
+}
+
+/** Permanent test from a Scryfall type line. */
+export function isPermanentType(typeLine: string | undefined): boolean | undefined {
+  if (!typeLine) return undefined;
+  const front = typeLine.split(" // ")[0] ?? typeLine;
+  return /\b(Creature|Artifact|Enchantment|Planeswalker|Land|Battle)\b/.test(front);
 }
 
 /** Filled from patterns.ts `playline` fields at import time to avoid a circular import. */

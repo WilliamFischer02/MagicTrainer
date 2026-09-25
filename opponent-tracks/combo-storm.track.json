@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "combo-storm",
+  "name": "Storm (rituals into a lethal Grapeshot)",
+  "archetype": "combo",
+  "description": "A 60-card storm opponent that durdles for three turns, then chains rituals and cantrips into a lethal Grapeshot on turn 4. Teaches the clock: a combo deck's plan is a single turn, so either win first, hold a counterspell or discard for exactly that turn, or pressure their life total so they must go off early.",
+  "turns": [
+    {
+      "turn": 1,
+      "boardSummary": "1 land, a cantrip; nothing on the battlefield",
+      "events": [
+        { "step": 1, "actor": "opponent", "cardName": "[land]", "from": "hand", "to": "battlefield", "action": "play-land", "turn": 1, "phase": "main1" },
+        { "step": 2, "actor": "opponent", "cardName": "[cantrip]", "from": "hand", "to": "graveyard", "action": "cast+resolve", "turn": 1, "phase": "main1", "note": "Cheap card selection. An empty battlefield on turn 1 against a deck full of instants and sorceries is the storm tell." }
+      ]
+    },
+    {
+      "turn": 2,
+      "boardSummary": "2 lands, sculpting the hand",
+      "events": [
+        { "step": 3, "actor": "opponent", "cardName": "[cantrip]", "from": "hand", "to": "graveyard", "action": "cast+resolve", "turn": 2, "phase": "main1", "breakPoint": "Decision point: this is the turn to deploy your fastest threat. Storm has no blockers; every point of damage now forces them to go off a turn early with a worse hand." }
+      ]
+    },
+    {
+      "turn": 3,
+      "boardSummary": "3 lands, Past in Flames in the graveyard, hand full of rituals",
+      "events": [
+        { "step": 4, "actor": "opponent", "cardName": "Faithless Looting", "from": "hand", "to": "graveyard", "action": "cast+resolve", "turn": 3, "phase": "main1", "note": "Loots away Past in Flames on purpose: it will be flashed back from the graveyard next turn." },
+        { "step": 5, "actor": "opponent", "cardName": "Past in Flames", "from": "hand", "to": "graveyard", "action": "discard", "turn": 3, "phase": "main1", "causedBy": ["Faithless Looting"] }
+      ]
+    },
+    {
+      "turn": 4,
+      "boardSummary": "The combo turn: 4 lands, rituals chained, storm count 9, Grapeshot for lethal",
+      "events": [
+        { "step": 6, "actor": "opponent", "cardName": "Pyretic Ritual", "from": "hand", "to": "graveyard", "action": "cast+resolve", "turn": 4, "phase": "main1", "note": "Ritual: pay two, add three. Storm count 1.", "breakPoint": "Counter the FIRST ritual, not the finisher: with the mana chain broken they cannot reach the storm count. If you have discard, take the finisher on turn 3, not the rituals." },
+        { "step": 7, "actor": "opponent", "cardName": "Desperate Ritual", "from": "hand", "to": "graveyard", "action": "cast+resolve", "turn": 4, "phase": "main1", "note": "Storm count 2." },
+        { "step": 8, "actor": "opponent", "cardName": "Manamorphose", "from": "hand", "to": "graveyard", "action": "cast+resolve", "turn": 4, "phase": "main1", "note": "Free spell that replaces itself: storm count 3, no mana lost." },
+        { "step": 9, "actor": "opponent", "cardName": "Past in Flames", "from": "graveyard", "to": "exile", "action": "cast", "turn": 4, "phase": "main1", "note": "Flashback from the graveyard (CR 702.34a): every instant and sorcery in the graveyard gains flashback this turn. The rituals come back." },
+        { "step": 10, "actor": "opponent", "cardName": "Pyretic Ritual", "from": "graveyard", "to": "exile", "action": "cast", "turn": 4, "phase": "main1", "note": "Flashed back: storm count climbs to 7–9 as each ritual is recast from the graveyard." },
+        { "step": 11, "actor": "opponent", "cardName": "Grapeshot", "from": "hand", "to": "stack", "action": "cast", "turn": 4, "phase": "main1", "note": "Storm (CR 702.40a): copy this spell for each other spell cast before it this turn. Nine copies plus the original: ten damage at one target each.", "breakPoint": "Storm copies are put on the stack by a triggered ability; countering Grapeshot itself does nothing to the copies. Counter the storm TRIGGER (a 'counter target triggered ability' effect) or have lifegain / a blocker-proof life total." },
+        { "step": 12, "actor": "opponent", "cardName": "Grapeshot", "from": "stack", "to": "graveyard", "action": "resolve", "turn": 4, "phase": "main1", "damage": 10, "note": "Ten damage to the face. From 20 this is lethal with the earlier chip damage; from 40 it is a wound, and they will rebuild for a second attempt." }
+      ]
+    }
+  ]
+}

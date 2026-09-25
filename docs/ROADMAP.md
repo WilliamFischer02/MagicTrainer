@@ -33,11 +33,11 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Export: decklist text (Moxfield/Arena/MTGO dialects) — `core/export/decklist.ts` (round-trip tested), copy + save dialog on the deck hero
 
 ## Phase 3 — Deck Trainer MVP
-- [ ] Board scene: 7 zones per side, card sprites (art crop), zone counters, life/mana HUD
-- [ ] Playline engine: merge user playline + opponent track by (turn, phase); scrubber; play/pause/step; speed
-- [ ] Arrow/pulse renderers per `zone-trajectory-signatures.md`; reduced-motion mode
-- [ ] Step panel: why (CR citation → opens rules viewer), mana/cards/life ledger, break points
-- [ ] Opponent track loader + validator; 5 more tracks (bg-midrange, combo-storm, edh-precon-value, edh-stax, edh-graveyard-hate)
+- [x] Board scene: 7 zones per side, card sprites (art crop), zone counters, life/mana HUD — `app/src/board/BoardScene.tsx` (FLIP moves + SVG arrows, D-006)
+- [x] Playline engine: merge user playline + opponent track by (turn, phase); scrubber; play/pause/step; speed — `core/trainer/{timeline,boardState}.ts`, `board/Timeline.tsx`
+- [x] Arrow/pulse renderers per `zone-trajectory-signatures.md`; reduced-motion mode — arrow kinds (draw/cast/remove/return/exile/attack), trigger pulses, ghost trails; `prefers-reduced-motion` → 0 ms
+- [x] Step panel: why (CR citation → opens rules viewer), mana/cards/life ledger, break points — `board/StepPanel.tsx`
+- [x] Opponent track loader + validator; 5 more tracks (bg-midrange, combo-storm, edh-precon-value, edh-stax, edh-graveyard-hate) — `core/opponent/schema.ts`, `data/tracks.ts`; real card names verified against the DB by test
 - [ ] Rules viewer: search the bundled CR sections by rule number/keyword
 
 ## Phase 4 — Polish & ship

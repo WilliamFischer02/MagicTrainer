@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "id": "edh-stax",
+  "name": "Commander stax (taxes, untap denial, then Armageddon)",
+  "archetype": "stax",
+  "description": "A Commander stax opponent: symmetric taxes and untap denial that they break with mana rocks, then a land wipe once they are ahead. Teaches playing under taxes: deploy cheap pieces before Thalia and Sphere, float mana before Winter Orb turns, and keep artifact mana so Armageddon does not end your game.",
+  "turns": [
+    {
+      "turn": 1,
+      "boardSummary": "1 land, Sol Ring: the asymmetry starts now (their mana is rocks, yours is lands)",
+      "events": [
+        { "step": 1, "actor": "opponent", "cardName": "Sol Ring", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 1, "phase": "main1", "note": "Stax decks run every rock they can: the locks are symmetric, the rocks are what breaks the symmetry." }
+      ]
+    },
+    {
+      "turn": 2,
+      "boardSummary": "Thalia, Guardian of Thraben: your noncreature spells cost one more",
+      "events": [
+        { "step": 2, "actor": "opponent", "cardName": "Thalia, Guardian of Thraben", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 2, "phase": "main1", "note": "Noncreature spells cost {1} more to cast for everyone. Creature-based lines are unaffected.", "breakPoint": "Decision point: cast your cheap noncreature enablers (signets, auras, removal) BEFORE turn 2 where you can; after Thalia every one of them is a turn slower." }
+      ]
+    },
+    {
+      "turn": 3,
+      "boardSummary": "Sphere of Resistance: everything costs one more — two more with Thalia",
+      "events": [
+        { "step": 3, "actor": "opponent", "cardName": "Sphere of Resistance", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 3, "phase": "main1", "note": "Spells cost {1} more to cast. Stacked with Thalia, your two-mana noncreature spells now cost four.", "breakPoint": "Artifact and enchantment removal is at a premium here: one Nature's Claim on the Sphere buys back a mana on every spell for the rest of the game." }
+      ]
+    },
+    {
+      "turn": 4,
+      "boardSummary": "Winter Orb: only one land untaps per untap step; their rocks keep untapping",
+      "events": [
+        { "step": 4, "actor": "opponent", "cardName": "Winter Orb", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 4, "phase": "main1", "note": "As long as Winter Orb is untapped, players can't untap more than one land during their untap steps (CR 502.3, the untap step). Mana rocks are unaffected.", "breakPoint": "Decision point: from now on, tap lands for mana only when you will spend it; an unused land that stays tapped is a turn lost. Prefer spells that add rocks or treasure." }
+      ]
+    },
+    {
+      "turn": 5,
+      "boardSummary": "Smokestack: each upkeep, they add a counter and everyone sacrifices permanents",
+      "events": [
+        { "step": 5, "actor": "opponent", "cardName": "Smokestack", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 5, "phase": "main1", "note": "Each upkeep its controller may add a soot counter; each player sacrifices a permanent per counter. They feed it tokens and spare rocks; you feed it lands.", "breakPoint": "Token makers and cheap fodder are the answer to Smokestack: sacrifice what costs you nothing, keep your lands and engine pieces." },
+        { "step": 6, "actor": "opponent", "cardName": "[your least valuable permanent]", "from": "battlefield", "to": "graveyard", "action": "sacrifice", "turn": 5, "phase": "upkeep", "causedBy": ["Smokestack"] }
+      ]
+    },
+    {
+      "turn": 6,
+      "boardSummary": "Armageddon: all lands destroyed; they still have four rocks",
+      "events": [
+        { "step": 7, "actor": "opponent", "cardName": "Armageddon", "from": "hand", "to": "stack", "action": "cast", "turn": 6, "phase": "main1", "note": "Destroy all lands. With Sol Ring, Arcane Signet and friends they keep operating; a lands-only mana base does not.", "breakPoint": "Decision point: if you saw Sphere and Winter Orb, Armageddon is coming. Hold a counterspell for exactly this, or make sure your win does not need lands after turn 6." },
+        { "step": 8, "actor": "opponent", "cardName": "[all lands]", "from": "battlefield", "to": "graveyard", "action": "destroy", "turn": 6, "phase": "main1", "causedBy": ["Armageddon"] }
+      ]
+    },
+    {
+      "turn": 7,
+      "boardSummary": "They untap with rocks and a growing Smokestack; you have no lands. The game is decided unless your engine survived on the battlefield.",
+      "events": [
+        { "step": 9, "actor": "opponent", "cardName": "Thalia, Guardian of Thraben", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 7, "phase": "declare-attackers", "damage": 2, "note": "A 2/1 first striker is now a real clock, because nothing you have can be cast." }
+      ]
+    }
+  ]
+}

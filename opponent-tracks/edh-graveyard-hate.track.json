@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": "edh-graveyard-hate",
+  "name": "Commander graveyard hate (Rest in Peace, Bojuka Bog, Scavenging Ooze)",
+  "archetype": "hatebears",
+  "description": "A Commander opponent whose plan is to switch your graveyard off: Rest in Peace on turn 2, a Bojuka Bog land drop, Scavenging Ooze grinding the yard, Grafdigger's Cage against reanimation. Teaches which lines survive graveyard hate (drain loops and outlet-plus-payoff engines do; recursion and reanimator lines do not) and when to answer the hate piece instead of advancing your own board.",
+  "turns": [
+    {
+      "turn": 1,
+      "boardSummary": "1 land; Leyline of the Void was in the opening hand and is already on the battlefield",
+      "events": [
+        { "step": 1, "actor": "opponent", "cardName": "Leyline of the Void", "from": "hand", "to": "battlefield", "action": "play-land", "turn": 1, "phase": "upkeep", "note": "Leyline: if it is in the opening hand it begins the game on the battlefield (CR 103.6). Cards that would go to your graveyard from anywhere are exiled instead.", "breakPoint": "Decision point: before the first draw, look at your line. 'Dies' means put into a graveyard from the battlefield (CR 700.4); with Leyline your creatures are exiled instead, so they never die and death triggers never fire. Aristocrats needs this Leyline gone before the engine matters." },
+        { "step": 2, "actor": "opponent", "cardName": "[land]", "from": "hand", "to": "battlefield", "action": "play-land", "turn": 1, "phase": "main1" }
+      ]
+    },
+    {
+      "turn": 2,
+      "boardSummary": "Rest in Peace: both graveyards exiled, all future cards exiled instead",
+      "events": [
+        { "step": 3, "actor": "opponent", "cardName": "Rest in Peace", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 2, "phase": "main1", "note": "When it enters, exile all graveyards; afterwards cards go to exile instead. Redundant with Leyline, and that is the point: two pieces means one removal spell is not enough.", "breakPoint": "Enchantment removal on Rest in Peace is worth a turn; do not spend it while Leyline is still there. Lines that never touch the graveyard (Exquisite Blood + Sanguine Bond, combat, storm) are unaffected." }
+      ]
+    },
+    {
+      "turn": 3,
+      "boardSummary": "Bojuka Bog played: any graveyard you rebuilt is exiled again",
+      "events": [
+        { "step": 4, "actor": "opponent", "cardName": "Bojuka Bog", "from": "hand", "to": "battlefield", "action": "play-land", "turn": 3, "phase": "main1", "note": "Enters tapped; when it enters, exile target player's graveyard. A land, so it dodges creature and enchantment removal entirely." },
+        { "step": 5, "actor": "opponent", "cardName": "[your graveyard]", "from": "graveyard", "to": "exile", "action": "exile", "turn": 3, "phase": "main1", "causedBy": ["Bojuka Bog"] }
+      ]
+    },
+    {
+      "turn": 4,
+      "boardSummary": "Scavenging Ooze and Grafdigger's Cage: no creature can enter from a graveyard",
+      "events": [
+        { "step": 6, "actor": "opponent", "cardName": "Grafdigger's Cage", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 4, "phase": "main1", "note": "Creature cards in graveyards and libraries can't enter the battlefield; players can't cast spells from graveyards or libraries. Reanimation and flashback are shut off.", "breakPoint": "Decision point: with Cage down, a reanimator line is dead until it leaves. Pivot to casting the threat from hand, or to the line that does not need the graveyard." },
+        { "step": 7, "actor": "opponent", "cardName": "Scavenging Ooze", "from": "hand", "to": "battlefield", "action": "cast+resolve", "turn": 4, "phase": "main1", "note": "Every green mana exiles a card from a graveyard and grows the Ooze. It also gains them life." }
+      ]
+    },
+    {
+      "turn": 5,
+      "boardSummary": "Ooze is a 6/6 from eating graveyards and attacks every turn",
+      "events": [
+        { "step": 8, "actor": "opponent", "cardName": "Scavenging Ooze", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 5, "phase": "declare-attackers", "damage": 6 }
+      ]
+    },
+    {
+      "turn": 6,
+      "boardSummary": "Hate pieces still up; the Ooze keeps attacking. If your line needed the graveyard, you needed an answer by now.",
+      "events": [
+        { "step": 9, "actor": "opponent", "cardName": "Scavenging Ooze", "from": "battlefield", "to": "battlefield", "action": "attack", "turn": 6, "phase": "declare-attackers", "damage": 7, "note": "Decision point: a hate deck wins by making your plan impossible, not by racing. Count your outs that remove BOTH Leyline and Rest in Peace, or switch to the line that ignores them." }
+      ]
+    }
+  ]
+}
