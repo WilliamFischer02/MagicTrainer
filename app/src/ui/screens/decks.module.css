@@ -147,7 +147,6 @@
 
 .pasteBox:focus {
   border-color: var(--gold);
-  box-shadow: none;
 }
 
 .pasteBox::placeholder {
@@ -172,6 +171,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--s-4);
+  padding-right: var(--s-1);
+}
+
+.detail > * {
+  flex-shrink: 0;
 }
 
 .detailHead {
@@ -202,6 +206,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: var(--s-4);
+  align-items: start;
 }
 
 .sectionTitle {
@@ -308,7 +313,6 @@
 .input:focus,
 .select:focus {
   border-color: var(--gold);
-  box-shadow: none;
 }
 
 .select option {
@@ -428,7 +432,6 @@
 
 .fixerSearch input:focus {
   border-color: var(--gold);
-  box-shadow: none;
 }
 
 .fixerSearch svg {
@@ -467,4 +470,314 @@
   .reviewSide {
     position: static;
   }
+}
+
+/* ---------- analysis ---------- */
+.analysis {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.analysisGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+}
+
+@media (max-width: 1240px) {
+  .analysisGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart {
+  margin: 0;
+}
+
+.chartSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.gridLine {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.axisLine {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+}
+
+.bar {
+  fill: var(--gold);
+}
+
+.barLabel {
+  fill: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.axisLabel {
+  fill: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.colorTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-2);
+}
+
+.colorTable th,
+.colorTable td {
+  text-align: left;
+  padding: var(--s-2) var(--s-2) var(--s-2) 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.colorTable thead th {
+  color: var(--ink-3);
+  font-weight: 500;
+  font-size: var(--fs-1);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.colorTable tbody th {
+  font-weight: 500;
+  white-space: nowrap;
+  width: 96px;
+}
+
+.colorTable tbody tr:last-child th,
+.colorTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.manaBadge {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: var(--s-2);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-on-gold);
+  background: var(--mana-c);
+}
+
+.manaW { background: var(--mana-w); color: #4a4224; }
+.manaU { background: var(--mana-u); color: #fff; }
+.manaB { background: #2b2233; color: #e9dfc7; border-color: var(--line-strong); }
+.manaR { background: var(--mana-r); color: #fff; }
+.manaG { background: var(--mana-g); color: #fff; }
+
+.miniBar {
+  position: relative;
+  display: inline-flex;
+  width: 120px;
+  height: 8px;
+  margin-right: var(--s-2);
+  border-radius: var(--r-pill);
+  background: var(--panel-3);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.miniFill {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+  border-radius: var(--r-pill);
+}
+
+.miniFill + .miniFill {
+  margin-left: 2px;
+}
+
+.miniFillSoft {
+  background: var(--gold-line);
+}
+
+.miniFillWarn {
+  background: var(--warn);
+}
+
+.targetBand {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(233, 223, 199, 0.16);
+}
+
+.miniVal {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2);
+  margin-right: var(--s-2);
+  vertical-align: middle;
+}
+
+.roleList,
+.typeList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.roleRow {
+  display: grid;
+  grid-template-columns: 96px minmax(72px, 1fr) auto auto;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-2);
+}
+
+.roleRow:last-child {
+  border-bottom: 0;
+}
+
+.roleLabel {
+  color: var(--ink-2);
+}
+
+.roleRow .miniBar {
+  width: 100%;
+  margin-right: 0;
+}
+
+.roleRow .miniVal {
+  white-space: nowrap;
+}
+
+.typeRow {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-1) 0;
+  font-size: var(--fs-2);
+}
+
+.typeBar {
+  display: block;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--panel-3);
+  overflow: hidden;
+}
+
+.typeFill {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+  border-radius: var(--r-pill);
+}
+
+.typeCount {
+  font-family: var(--font-mono);
+  text-align: right;
+}
+
+.entriesToggle {
+  align-self: flex-start;
+}
+
+/* ---------- commander hero + identity ---------- */
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--s-4);
+  align-items: center;
+  padding: var(--s-4);
+  border-radius: var(--r-3);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.heroArt {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 30%;
+  opacity: 0.22;
+  filter: saturate(0.9);
+  pointer-events: none;
+}
+
+.heroArt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--panel) 0%, rgba(26, 32, 40, 0.75) 45%, rgba(26, 32, 40, 0.35) 100%);
+}
+
+.heroThumb {
+  position: relative;
+  width: 96px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-2);
+  object-fit: cover;
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-1);
+  background: var(--panel-3);
+}
+
+.heroThumbEmpty {
+  position: relative;
+  width: 96px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-2);
+  border: 1px dashed var(--line-strong);
+  display: grid;
+  place-items: center;
+  color: var(--ink-3);
+}
+
+.heroBody {
+  position: relative;
+  min-width: 0;
+}
+
+.heroActions {
+  position: relative;
+}
+
+.identity {
+  display: inline-flex;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.identity .manaBadge {
+  width: 16px;
+  height: 16px;
+  font-size: 9px;
+  margin: 0;
+}
+
+.deckCardTop {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+}
+
+.emptyDeckNote {
+  color: var(--ink-3);
+  font-size: var(--fs-2);
 }

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Deck, DeckEntry, Format, ImportFormat } from "../core/types";
+import type { Color, Deck, DeckEntry, Format, ImportFormat } from "../core/types";
 import type { DbClient } from "./db";
 
 /**
@@ -21,6 +21,8 @@ const SummaryRow = DeckRow.omit({ raw: true }).extend({
   main_count: z.number(),
   commander_names: z.string().nullable(),
   unresolved: z.number(),
+  color_identity: z.string().nullable(),
+  commander_art: z.string().nullable(),
 });
 
 const EntryRow = z.object({
@@ -43,10 +45,15 @@ export interface DeckSummary {
   commanders: string[];
   /** Entries saved without an oracle id (still need the fixer). */
   unresolved: number;
+  /** Union of color identity across resolved commanders + main deck, WUBRG order. */
+  colors: Color[];
+  /** Art crop of the first commander (or nothing for 60-card decks). */
+  commanderArt?: string;
   createdAt: string;
   updatedAt: string;
 }
 
+const WUBRG: readonly Color[] = ["W", "U", "B", "R", "G"];
 const FORMATS: readonly Format[] = ["commander", "modern", "standard", "pioneer", "legacy", "vintage", "pauper", "brawl", "casual"];
 const IMPORT_FORMATS: readonly ImportFormat[] = ["manabox-csv", "tcgplayer-csv", "moxfield-csv", "decklist-text", "arena-text", "unknown"];
 
@@ -64,7 +71,13 @@ export async function listDecks(db: DbClient): Promise<DeckSummary[]> {
            (SELECT group_concat(name, ' / ') FROM (
               SELECT name FROM deck_entries e WHERE e.deck_id = d.id AND e.section = 'commanders' ORDER BY position
            )) AS commander_names,
-           (SELECT COUNT(*) FROM deck_entries e WHERE e.deck_id = d.id AND e.oracle_id IS NULL AND e.section IN ('commanders', 'main')) AS unresolved
+           (SELECT COUNT(*) FROM deck_entries e WHERE e.deck_id = d.id AND e.oracle_id IS NULL AND e.section IN ('commanders', 'main')) AS unresolved,
+           (SELECT group_concat(DISTINCT j.value) FROM deck_entries e
+              JOIN cards c ON c.oracle_id = e.oracle_id
+              JOIN json_each(c.color_identity) j
+             WHERE e.deck_id = d.id AND e.section IN ('commanders', 'main')) AS color_identity,
+           (SELECT c.image_art_crop FROM deck_entries e JOIN cards c ON c.oracle_id = e.oracle_id
+             WHERE e.deck_id = d.id AND e.section = 'commanders' ORDER BY e.position LIMIT 1) AS commander_art
     FROM decks d
     ORDER BY d.updated_at DESC`);
   return rows.map((raw) => {
@@ -77,6 +90,8 @@ export async function listDecks(db: DbClient): Promise<DeckSummary[]> {
       mainCount: r.main_count,
       commanders: r.commander_names ? r.commander_names.split(" / ") : [],
       unresolved: r.unresolved,
+      colors: WUBRG.filter((c) => (r.color_identity ?? "").split(",").includes(c)),
+      commanderArt: r.commander_art ?? undefined,
       createdAt: r.created_at,
       updatedAt: r.updated_at,
     };

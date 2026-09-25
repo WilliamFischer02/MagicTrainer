@@ -45,7 +45,7 @@ export function Button({ variant = "default", size = "md", className, ...rest }:
 
 export function EmptyState({ icon, title, body, actions }: { icon: ReactNode; title: string; body: ReactNode; actions?: ReactNode }) {
   return (
-    <div className={s.empty} role="status">
+    <div className={s.empty}>
       <div className={s.emptyGlyph}>{icon}</div>
       <h2 className={s.emptyTitle}>{title}</h2>
       <p className={s.emptyBody}>{body}</p>

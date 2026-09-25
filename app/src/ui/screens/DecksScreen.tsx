@@ -7,8 +7,11 @@ import type { Deck, DeckEntry, Format } from "../../core/types";
 import { resolveDeckNames, type DeckResolution, type DeckSummary } from "../../data";
 import { Button, Callout, Card, EmptyState, Page, Spinner, formatCount, formatDate } from "../components";
 import { AlertIcon, ArrowLeftIcon, CheckIcon, ClipboardIcon, DeckIcon, FolderIcon, ImportIcon, SearchIcon, TrashIcon } from "../icons";
-import { useCardSearch, useDbStatus, useDeck, useDecks, useDeleteDeck, useNameIndex, useSaveDeck } from "../queries";
+import { cardImageSrc } from "../../bridge/images";
+import type { Color } from "../../core/types";
+import { useCard, useCardSearch, useDbStatus, useDeck, useDecks, useDeleteDeck, useNameIndex, usePrefetchImages, useSaveDeck } from "../queries";
 import { useAppStore } from "../store";
+import { DeckAnalysis } from "./DeckAnalysis";
 import d from "./decks.module.css";
 import s from "./screens.module.css";
 
@@ -121,7 +124,7 @@ function Library({ onPick, onPaste, reading, loadError, dragOver }: { onPick: ()
 
   const importPanel = (
     <>
-      <div className={`${d.dropZone} ${dragOver ? d.dropZoneActive : ""}`} aria-live="polite">
+      <div className={`${d.dropZone} ${dragOver ? d.dropZoneActive : ""}`}>
         <ImportIcon />
         <div>
           <strong>Drop a decklist here</strong>
@@ -135,11 +138,13 @@ function Library({ onPick, onPaste, reading, loadError, dragOver }: { onPick: ()
             <ClipboardIcon /> Paste a list
           </Button>
         </div>
-        {reading && (
-          <div className={s.state} role="status" style={{ marginTop: 0 }}>
-            <Spinner /> Reading file…
-          </div>
-        )}
+        <div role="status" aria-live="polite">
+          {reading && (
+            <div className={s.state} style={{ marginTop: 0 }}>
+              <Spinner /> Reading file…
+            </div>
+          )}
+        </div>
       </div>
       {showPaste && (
         <div className={d.library}>
@@ -201,10 +206,13 @@ function Library({ onPick, onPaste, reading, loadError, dragOver }: { onPick: ()
     <div className={d.split}>
       <div className={d.library}>
         {importPanel}
-        <div className={d.libraryList} role="listbox" aria-label="Saved decks">
+        <div className={d.libraryList} role="group" aria-label="Saved decks">
           {list.map((deck) => (
-            <button key={deck.id} type="button" role="option" aria-selected={deck.id === selectedDeckId} aria-pressed={deck.id === selectedDeckId} className={d.deckCard} onClick={() => selectDeck(deck.id)}>
-              <span className={d.deckName}>{deck.name}</span>
+            <button key={deck.id} type="button" aria-pressed={deck.id === selectedDeckId} className={d.deckCard} onClick={() => selectDeck(deck.id)}>
+              <span className={d.deckCardTop}>
+                <Identity colors={deck.colors} />
+                <span className={d.deckName}>{deck.name}</span>
+              </span>
               <span className={d.chip}>{deck.format ?? "no format"}</span>
               <span className={d.deckSub}>
                 {deck.commanders.length ? `${deck.commanders.join(" / ")} · ` : ""}
@@ -225,7 +233,20 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
   const del = useDeleteDeck();
   const selectDeck = useAppStore((st) => st.selectDeck);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showList, setShowList] = useState(false);
   useEffect(() => setConfirmDelete(false), [id]);
+  const commanderId = deck.data?.commanders[0]?.oracleId;
+  const commander = useCard(commanderId);
+  const prefetch = usePrefetchImages();
+  const prefetched = useRef<string | null>(null);
+  useEffect(() => {
+    // Warm the image cache for this deck once per open (art crops first; the board uses them).
+    const dk = deck.data;
+    if (!dk || prefetched.current === id) return;
+    prefetched.current = id;
+    const art = summary?.commanderArt ? [summary.commanderArt] : [];
+    prefetch.mutate(art);
+  }, [deck.data, id, summary?.commanderArt, prefetch]);
 
   if (deck.isPending) {
     return (
@@ -250,11 +271,24 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
   ].filter((x) => x.entries.length > 0);
   const unresolved = [...dk.commanders, ...dk.main].filter((e) => !e.oracleId).length;
 
+  const art = cardImageSrc(commander.data?.imageUris?.art_crop ?? summary?.commanderArt);
+  const identity = summary?.colors ?? [];
+
   return (
     <div className={d.detail}>
-      <div className={d.detailHead}>
-        <div>
-          <h2 className={d.detailTitle}>{dk.name}</h2>
+      <div className={d.hero}>
+        {art && <div className={d.heroArt} style={{ backgroundImage: `url("${art}")` }} aria-hidden="true" />}
+        {art ? (
+          <img className={d.heroThumb} src={art} alt={commander.data ? `${commander.data.name} art` : ""} width={96} height={72} decoding="async" />
+        ) : (
+          <div className={d.heroThumbEmpty} aria-hidden="true">
+            <DeckIcon />
+          </div>
+        )}
+        <div className={d.heroBody}>
+          <h2 className={d.detailTitle}>
+            {identity.length > 0 && <Identity colors={identity} />} {dk.name}
+          </h2>
           <div className={d.detailMeta}>
             <span className={d.chip}>{dk.format ?? "no format"}</span>
             <span>{formatCount(countCards(dk.main) + countCards(dk.commanders))} cards</span>
@@ -264,7 +298,7 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
             {summary && unresolved === 0 && <span className={`${d.chip} ${d.chipOk}`}>all cards resolved</span>}
           </div>
         </div>
-        <div className={d.row}>
+        <div className={`${d.row} ${d.heroActions}`}>
           {confirmDelete ? (
             <>
               <span className={d.muted}>Delete “{dk.name}”?</span>
@@ -295,7 +329,12 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
           Could not delete: {del.error instanceof Error ? del.error.message : String(del.error)}
         </Callout>
       )}
-      <Callout tone="info">Curve, color sources, role coverage, and strategy detection for this deck arrive with the next build. The list below is what was saved.</Callout>
+      <DeckAnalysis deck={dk} />
+      <Button size="sm" variant="ghost" className={d.entriesToggle} onClick={() => setShowList((v) => !v)} aria-expanded={showList}>
+        {showList ? "Hide decklist" : "Show decklist"}
+      </Button>
+      {showList && sections.length === 0 && <p className={d.emptyDeckNote}>No cards were saved for this deck — every line was skipped. Re-import the list to try again.</p>}
+      {showList && sections.length > 0 && (
       <div className={d.sections}>
         {sections.map((sec) => (
           <Card key={sec.key}>
@@ -317,7 +356,24 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
           </Card>
         ))}
       </div>
+      )}
     </div>
+  );
+}
+
+const COLOR_WORD: Record<Color, string> = { W: "white", U: "blue", B: "black", R: "red", G: "green" };
+
+/** Color identity as small mana badges; the letters are the identity, not the hue. */
+function Identity({ colors }: { colors: readonly Color[] }) {
+  if (colors.length === 0) return null;
+  return (
+    <span className={d.identity} role="img" aria-label={`Color identity: ${colors.map((c) => COLOR_WORD[c]).join(", ")}`}>
+      {colors.map((c) => (
+        <span key={c} className={`${d.manaBadge} ${d[`mana${c}`]}`} aria-hidden="true">
+          {c}
+        </span>
+      ))}
+    </span>
   );
 }
 
@@ -335,7 +391,13 @@ function ImportReview({ draft, onCancel, onSaved }: { draft: Draft; onCancel: ()
   const save = useSaveDeck();
   const selectDeck = useAppStore((st) => st.selectDeck);
   const nameRef = useRef<HTMLInputElement>(null);
+  const [confirmBack, setConfirmBack] = useState(false);
   useEffect(() => nameRef.current?.focus(), []);
+  const dirty = Object.keys(overrides).length > 0;
+  const back = () => {
+    if (dirty && !confirmBack) setConfirmBack(true);
+    else onCancel();
+  };
 
   const deckForResolve = useMemo<Deck>(() => ({ ...imported.deck, name: name.trim() || imported.deck.name, format: format || undefined }), [imported.deck, name, format]);
   const resolution: DeckResolution | null = useMemo(() => (index.data ? resolveDeckNames(index.data, deckForResolve) : null), [index.data, deckForResolve]);
@@ -385,9 +447,15 @@ function ImportReview({ draft, onCancel, onSaved }: { draft: Draft; onCancel: ()
       subtitle={`From ${sourceLabel}. Nothing is saved until you confirm.`}
       actions={
         <div className={d.row}>
-          <Button variant="ghost" onClick={onCancel}>
-            <ArrowLeftIcon /> Back
+          {confirmBack && <span className={d.muted}>Discard your name fixes?</span>}
+          <Button variant="ghost" onClick={back}>
+            <ArrowLeftIcon /> {confirmBack ? "Discard & go back" : "Back"}
           </Button>
+          {confirmBack && (
+            <Button variant="ghost" onClick={() => setConfirmBack(false)}>
+              Stay
+            </Button>
+          )}
           <Button variant="primary" onClick={onSave} disabled={!finalDeck || save.isPending || total === 0 || !name.trim()}>
             {save.isPending ? <Spinner /> : <CheckIcon />} Save deck
           </Button>

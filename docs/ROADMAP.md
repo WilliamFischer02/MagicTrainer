@@ -25,9 +25,9 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [ ] UI review minors (2026-09-24): fold DataScreen inline token styles into CSS modules (partly done: `.lede`); `--measure-*` tokens for 640/860/900 px widths; 2× DPI screenshot pass on a HiDPI display
 
 ## Phase 2 — Deck Builder MVP
-- [ ] Import UI (drag-drop, format auto-detect, error report, unresolved-name fixer with autocomplete)
+- [x] Import UI (drag-drop, format auto-detect, error report, unresolved-name fixer with autocomplete) — 2026-09-24, `DecksScreen.tsx`; six sample decks import with 0 unresolved
 - [ ] Collection view (grid/list, search, filters by color/type/tag/owned qty)
-- [ ] Deck view: curve histogram, color sources vs pips, role coverage vs baseline, legality check
+- [x] Deck view: curve histogram, color sources vs pips, role coverage vs baseline, legality check — `core/math/deckStats.ts` (19 tests) + `DeckAnalysis.tsx`; commander art hero via `mtimg`
 - [ ] Strategy panel: detected archetypes/combos with rationale + near-miss suggestions (owned first, then Card Kingdom link/price)
 - [ ] Deck graph (React Flow): cards as nodes, role edges, combo clusters
 - [ ] Export: decklist text (Moxfield/Arena dialects)

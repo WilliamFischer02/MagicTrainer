@@ -36,6 +36,10 @@ export const CardRowSchema = z.object({
   image_normal: z.string().nullable(),
   image_large: z.string().nullable(),
   image_art_crop: z.string().nullable(),
+  produced_mana: JsonText.nullable(),
+  prices: JsonText.nullable(),
+  purchase_uris: JsonText.nullable(),
+  scryfall_uri: z.string().nullable(),
   tags_json: JsonText.nullable(),
 });
 export type CardRow = z.infer<typeof CardRowSchema>;
@@ -64,6 +68,13 @@ export function rowToCardOracle(raw: unknown): CardOracle {
     large: r.image_large ?? undefined,
     art_crop: r.image_art_crop ?? undefined,
   };
+  const priceNum = z.union([z.string(), z.number()]).nullable().optional().transform((v) => {
+    if (v === null || v === undefined) return undefined;
+    const n = typeof v === "number" ? v : Number.parseFloat(v);
+    return Number.isFinite(n) ? n : undefined;
+  });
+  const prices = parseJson(r.prices, z.object({ usd: priceNum, usd_foil: priceNum }).partial(), {});
+  const uris = parseJson(r.purchase_uris, z.object({ cardkingdom: z.string().optional(), tcgplayer: z.string().optional(), cardmarket: z.string().optional() }).partial(), {});
   return {
     oracleId: r.oracle_id,
     name: r.name,
@@ -84,6 +95,10 @@ export function rowToCardOracle(raw: unknown): CardOracle {
     imageUris: Object.values(images).some(Boolean) ? images : undefined,
     printingId: r.repr_printing_id ?? undefined,
     layout: r.layout,
+    producedMana: parseJson(r.produced_mana, z.array(z.string()), []),
+    prices: prices.usd !== undefined || prices.usd_foil !== undefined ? { usd: prices.usd, usdFoil: prices.usd_foil } : undefined,
+    purchaseUris: Object.keys(uris).length ? uris : undefined,
+    scryfallUri: r.scryfall_uri ?? undefined,
   };
 }
 
@@ -92,6 +107,7 @@ const CARD_SELECT = `
          c.colors, c.color_identity, c.keywords, c.power, c.toughness, c.loyalty,
          c.legalities, c.edhrec_rank, c.game_changer, c.repr_printing_id,
          c.image_small, c.image_normal, c.image_large, c.image_art_crop,
+         c.produced_mana, c.prices, c.purchase_uris, c.scryfall_uri,
          (SELECT json_group_array(slug) FROM (
             SELECT DISTINCT t.slug
             FROM card_oracle_tags cot
