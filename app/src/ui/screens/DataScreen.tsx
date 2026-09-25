@@ -4,6 +4,7 @@ import { importBulk, onBulkProgress, type BulkImportResult, type BulkPart, type 
 import { Button, Callout, Card, EmptyState, ExternalLink, Page, Spinner, formatBytes, formatCount, formatDate } from "../components";
 import { AlertIcon, CheckIcon, DatabaseIcon, DownloadIcon, FolderIcon, TrashIcon } from "../icons";
 import { invalidateCardData, useClearComboCache, useClearImageCache, useComboCacheStatus, useDbStatus, useImageCacheStatus } from "../queries";
+import { usePrefs } from "../store";
 import s from "./screens.module.css";
 
 type Run = { kind: "idle" } | { kind: "running"; progress: Progress | null; startedAt: number } | { kind: "done"; result: BulkImportResult } | { kind: "error"; message: string };
@@ -175,6 +176,8 @@ export function DataScreen() {
           )}
         </Card>
 
+        <PrivacyCard />
+
         <CacheCard />
 
         <Card title="Sources & credits">
@@ -186,6 +189,23 @@ export function DataScreen() {
         </Card>
       </div>
     </Page>
+  );
+}
+
+function PrivacyCard() {
+  const autoCombos = usePrefs((p) => p.autoCombos);
+  const setAutoCombos = usePrefs((p) => p.setAutoCombos);
+  return (
+    <Card title="Online lookups">
+      <label className={s.check} style={{ marginTop: 0 }}>
+        <input type="checkbox" checked={autoCombos} onChange={(e) => setAutoCombos(e.target.checked)} />
+        Look up combos on Commander Spellbook automatically when a deck opens
+      </label>
+      <p className={s.lede} style={{ marginTop: "var(--s-2)", marginBottom: 0 }}>
+        Sends the deck's card names and quantities (nothing else) to commanderspellbook.com and caches the answer for 24 hours. Turn it off to look up combos only when you press the
+        button in a deck's Strategy panel. Card images are fetched from Scryfall either way.
+      </p>
+    </Card>
   );
 }
 

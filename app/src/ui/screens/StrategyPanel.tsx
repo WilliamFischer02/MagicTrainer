@@ -7,6 +7,7 @@ import type { CardOracle, Deck, StrategyMatch } from "../../core/types";
 import { Button, Callout, Card, ExternalLink, Spinner } from "../components";
 import { AlertIcon } from "../icons";
 import { useCards, useDeckCombos, useNameIndex, useOwned } from "../queries";
+import { usePrefs } from "../store";
 import d from "./decks.module.css";
 import s from "./screens.module.css";
 
@@ -27,7 +28,9 @@ export function StrategyPanel({ deck, cards }: { deck: Deck; cards: ReadonlyMap<
     return out;
   }, [deck, cards]);
   const matches = useMemo(() => detectStrategies(resolved), [resolved]);
-  const combos = useDeckCombos(deck);
+  const autoCombos = usePrefs((p) => p.autoCombos);
+  const [manual, setManual] = useState(false);
+  const combos = useDeckCombos(deck, autoCombos || manual);
   const deckNames = useMemo(() => [...deck.commanders, ...deck.main].map((e) => e.name), [deck]);
   const confirmed = combos.data ? includedCombos(combos.data.results) : [];
   const near = combos.data ? nearMissCombos(combos.data.results, deckNames, 8) : [];
@@ -50,7 +53,17 @@ export function StrategyPanel({ deck, cards }: { deck: Deck; cards: ReadonlyMap<
       </Card>
 
       <Card title="Combos">
-        {combos.isPending && (
+        {!autoCombos && !manual && (
+          <div className={d.row}>
+            <p className={d.muted} style={{ margin: 0 }}>
+              Automatic Commander Spellbook lookups are off (Settings). Nothing has been sent.
+            </p>
+            <Button size="sm" onClick={() => setManual(true)}>
+              Look up combos now
+            </Button>
+          </div>
+        )}
+        {(autoCombos || manual) && combos.isPending && (
           <div className={s.state} role="status" style={{ marginTop: 0 }}>
             <Spinner /> Asking Commander Spellbook…
           </div>

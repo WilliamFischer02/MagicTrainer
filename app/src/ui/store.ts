@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { RuleEntry } from "../bridge/rules";
 
 /** App-level UI state: mode, route, context panel. Server/DB state lives in TanStack Query (`queries.ts`). */
@@ -18,6 +19,23 @@ export interface AppState {
   setContext: (item: ContextItem | null) => void;
   selectDeck: (id: string | null) => void;
 }
+
+/** Preferences that survive restarts (localStorage; nothing sensitive). */
+export interface PrefsState {
+  /** Q-014: send the decklist to Commander Spellbook automatically when a deck opens. */
+  autoCombos: boolean;
+  setAutoCombos: (on: boolean) => void;
+}
+
+export const usePrefs = create<PrefsState>()(
+  persist(
+    (set) => ({
+      autoCombos: true,
+      setAutoCombos: (autoCombos) => set({ autoCombos }),
+    }),
+    { name: "magictrainer.prefs" },
+  ),
+);
 
 /** `?route=rules&mode=trainer` on the dev URL selects the initial screen (screenshots, tests). */
 function initialFromUrl(): { route: Route; mode: Mode } {

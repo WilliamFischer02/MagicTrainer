@@ -47,7 +47,7 @@ export interface DeckSummary {
   unresolved: number;
   /** Union of color identity across resolved commanders + main deck, WUBRG order. */
   colors: Color[];
-  /** Art crop of the first commander (or nothing for 60-card decks). */
+  /** Art crop of the first commander, or the deck's most-played nonland card for 60-card decks. */
   commanderArt?: string;
   createdAt: string;
   updatedAt: string;
@@ -77,7 +77,10 @@ export async function listDecks(db: DbClient): Promise<DeckSummary[]> {
               JOIN json_each(c.color_identity) j
              WHERE e.deck_id = d.id AND e.section IN ('commanders', 'main')) AS color_identity,
            (SELECT c.image_art_crop FROM deck_entries e JOIN cards c ON c.oracle_id = e.oracle_id
-             WHERE e.deck_id = d.id AND e.section = 'commanders' ORDER BY e.position LIMIT 1) AS commander_art
+             WHERE e.deck_id = d.id AND e.section IN ('commanders', 'main') AND c.image_art_crop IS NOT NULL
+               AND c.type_line NOT LIKE '%Land%'
+             ORDER BY (e.section = 'commanders') DESC, e.position * (e.section = 'commanders') ASC, c.edhrec_rank IS NULL, c.edhrec_rank ASC
+             LIMIT 1) AS commander_art
     FROM decks d
     ORDER BY d.updated_at DESC`);
   return rows.map((raw) => {

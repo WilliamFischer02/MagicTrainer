@@ -9,6 +9,7 @@ import type { CardOracle, Deck } from "../../core/types";
 import { Callout, ExternalLink } from "../components";
 import { AlertIcon } from "../icons";
 import { useDeckCombos } from "../queries";
+import { usePrefs } from "../store";
 import g from "./graph.module.css";
 
 /**
@@ -58,7 +59,8 @@ export function DeckGraph({ deck, cards }: { deck: Deck; cards: ReadonlyMap<stri
     return out;
   }, [deck, cards]);
   const matches = useMemo(() => detectStrategies(resolved), [resolved]);
-  const combos = useDeckCombos(deck);
+  const autoCombos = usePrefs((p) => p.autoCombos);
+  const combos = useDeckCombos(deck, autoCombos);
   const combosIncluded = useMemo(() => (combos.data ? includedCombos(combos.data.results) : []), [combos.data]);
   const [maxHubs, setMaxHubs] = useState(8);
 
