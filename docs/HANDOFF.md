@@ -22,7 +22,7 @@ It is the first thing the next session reads after CLAUDE.md.
 3. **Phase 3 · Step panel:** why (CR citation → `rulesGet`, opens the existing context panel), mana/cards/life ledger, break points.
 
 Queued (small, any time): ESLint + `no-restricted-imports` dependency rule (eslint not installed); Settings toggle for automatic Spellbook
-lookups (Q-014); collection list view + tag filter; 2× DPI screenshot pass; rename sample decks "Pink"/"Purple" only if William says so.
+lookups (Q-014); collection list view + tag filter; 2× DPI screenshot pass. Sample decks were renamed by archetype (2026-09-25).
 
 ## Open risks / unknowns
 - **Combo lookups POST the decklist to Commander Spellbook when a deck opens** (Q-014). Offline falls back to the 24 h disk cache.
@@ -57,5 +57,5 @@ lookups (Q-014); collection list view + tag filter; 2× DPI screenshot pass; ren
 - UI: `app/src/ui/` — `queries.ts` (TanStack), `store.ts`, screens: Decks (library / detail / import review / export), DeckAnalysis,
   StrategyPanel, DeckGraph, Collection (browser / review), Data (settings + caches), Rules
 - Dev: `app/diag.html` + `src/diag/`, `app/spike.html` + `src/spike/`, `scripts/screenshot-window.ps1`
-- Decisions this session: D-012…D-016 · Questions: Q-004 updated, Q-014 added (14 open, all provisional) · UI review + strategy audit
+- Decisions this session: D-012…D-016 · Questions: all 14 accepted by William on 2026-09-25 (OPEN block is empty) · UI review + strategy audit
   findings were applied (see commit messages 5530585…0cb7d2b)

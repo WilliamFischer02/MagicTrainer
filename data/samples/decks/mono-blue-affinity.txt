@@ -1,4 +1,4 @@
-// Mono-Blue Affinity Modern — "Affinity" (artifact aggro). STATUS: DESIGNED, PURCHASES UNCONFIRMED.
+// Mono-Blue Affinity Modern — "Mono-Blue Affinity" (artifact aggro). STATUS: DESIGNED, PURCHASES UNCONFIRMED.
 // format: modern | source: PLAYER-PROFILE_william.md (2026-07-03)
 Deck
 4 Ornithopter

@@ -1,4 +1,4 @@
-// Mono-Green Ghalta Commander — "Ghalta Stampede" (power-matters ramp/stompy).
+// Mono-Green Ghalta Commander — "Ghalta Power Ramp" (power-matters ramp/stompy).
 // format: commander | source: PLAYER-PROFILE_william.md (2026-07-03)
 Commander
 1 Ghalta, Stampede Tyrant

@@ -1,4 +1,4 @@
-// UR Modern — "Purple" (Izzet Prowess Tempo).
+// UR Modern — "Izzet Prowess" (Izzet Prowess Tempo).
 // format: modern | source: PLAYER-PROFILE_william.md (2026-07-03)
 Deck
 1 Monastery Swiftspear

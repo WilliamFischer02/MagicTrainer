@@ -40,7 +40,7 @@ export function deckNameFromFileName(fileName: string): string {
   return stem;
 }
 
-/** A leading comment such as `// WB Athreos Commander — "Athreos" (aristocrats)` names the deck "Athreos". */
+/** A leading comment such as `// WB Athreos Commander — "Athreos Aristocrats" (aristocrats)` names the deck "Athreos Aristocrats". */
 export function deckNameFromComment(raw: string): string | undefined {
   for (const line of raw.split(/\r?\n/).slice(0, 5)) {
     const m = /^\s*(?:\/\/|#)\s*(.*)$/.exec(line);

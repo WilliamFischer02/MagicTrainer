@@ -24,7 +24,7 @@ A card fills a role if (type matches) ∧ (custom passes) ∧ (any tag ∨ any r
 `StrategyMatch[]` sorted by confidence, each with `roles`, `rationale` (which signal fired per card), `externalRef`.
 
 ## Quality gates
-- Golden tests (`app/src/data/__tests__/samples-strategy.test.ts`, real DB): per deck a `must` set, a `topOneOf` set, and a `mustNot` set — a deck can legitimately carry two labels (Athreos = aristocrats + drain loop). 2026-09-24 expectations: Athreos → aristocrats + lifegain-drain-loop; Ghalta → power-ramp-stompy; Affinity → artifact-aggro; Mono-green → stompy (and NOT prowess-tempo); Boros "Pink" → creature-aggro; Izzet "Purple" → prowess-tempo.
+- Golden tests (`app/src/data/__tests__/samples-strategy.test.ts`, real DB): per deck a `must` set, a `topOneOf` set, and a `mustNot` set — a deck can legitimately carry two labels (Athreos = aristocrats + drain loop). 2026-09-24 expectations: Athreos → aristocrats + lifegain-drain-loop; Ghalta → power-ramp-stompy; Affinity → artifact-aggro; Mono-green → stompy (and NOT prowess-tempo); Boros Aggro → creature-aggro; Izzet Prowess → prowess-tempo. (Sample decks renamed by archetype 2026-09-25 at William's request.)
 - Every new pattern needs ≥ 1 positive and ≥ 1 negative fixture.
 - No regex may match a bare keyword that appears in flavor/reminder text; test against a random 500-card sample for false-positive rate < 2 %.
 

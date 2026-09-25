@@ -16,7 +16,7 @@ describe("deck names and formats from files", () => {
 
   it("prefers a quoted name in a leading comment and reads the format comment", () => {
     const raw = read("decks/athreos-aristocrats.txt");
-    expect(deckNameFromComment(raw)).toBe("Athreos");
+    expect(deckNameFromComment(raw)).toBe("Athreos Aristocrats");
     expect(formatFromComment(raw)).toBe("commander");
     expect(formatFromComment("1 Sol Ring")).toBeUndefined();
     expect(formatFromComment("# format: Modern\n4 Ragavan")).toBe("modern");
@@ -32,7 +32,7 @@ describe("deck names and formats from files", () => {
 describe("importDeck", () => {
   it("imports William's Athreos list as a 100-card Commander deck with no warnings", () => {
     const { deck, warnings, errors } = importDeck(read("decks/athreos-aristocrats.txt"), { fileName: "athreos-aristocrats.txt" });
-    expect(deck.name).toBe("Athreos");
+    expect(deck.name).toBe("Athreos Aristocrats");
     expect(deck.format).toBe("commander");
     expect(deck.commanders.map((c) => c.name)).toEqual(["Athreos, God of Passage"]);
     expect(deck.main.reduce((n, e) => n + e.quantity, 0)).toBe(99);

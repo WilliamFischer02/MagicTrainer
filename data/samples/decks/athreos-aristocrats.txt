@@ -1,4 +1,4 @@
-// WB Athreos Commander — "Athreos" (aristocrats / lifedrain).
+// WB Athreos Commander — "Athreos Aristocrats" (aristocrats / lifedrain).
 // format: commander | source: PLAYER-PROFILE_william.md (2026-07-03)
 Commander
 1 Athreos, God of Passage

@@ -1,4 +1,4 @@
-// RW Modern — "Pink" (Boros Aggro).
+// RW Modern — "Boros Aggro" (Boros Aggro).
 // format: modern | source: PLAYER-PROFILE_william.md (2026-07-03)
 Deck
 1 Mardu Woe-Reaper
