@@ -11,7 +11,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Agent config (CLAUDE.md, skills, subagents, hooks), setup + data scripts
 - [x] Verify the scaffold builds on Windows (`npm run tauri dev`) — verified 2026-09-24: `cargo check` 60 s, dev window opened (Rust 1.97.1, Node 24, WebView2 153)
 
-## Phase 1 — Data spine (target: 1–2 unattended sessions)
+## Phase 1 — Data spine ✅ (2 leftovers below are Phase 3/4 wiring)
 - [x] Rust command: download Scryfall bulk (oracle-cards, rulings, oracle-tags) with progress; stream JSONL.gz → SQLite; schema + migrations; FTS5 name index — `import_bulk` + `magictrainer-import` CLI; 38,690 cards / 236k taggings / 79k rulings in 27 s (debug)
 - [x] Card resolver (exact → normalized → fuzzy with confidence; DFC/split/adventure names) — `core/resolve/`, 51 tests
 - [x] `data/` TS layer (DbClient, card queries with Zod, NameIndex loader, deck resolution) — six sample decks resolve with 0 unresolved
@@ -24,7 +24,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [ ] ESLint + `no-restricted-imports` dependency-direction rule (eslint is not installed; `npm run lint` fails)
 - [ ] UI review minors (2026-09-24): fold DataScreen inline token styles into CSS modules (partly done: `.lede`); `--measure-*` tokens for 640/860/900 px widths; 2× DPI screenshot pass on a HiDPI display
 
-## Phase 2 — Deck Builder MVP
+## Phase 2 — Deck Builder MVP ✅ (2026-09-25; polish items tracked inline)
 - [x] Import UI (drag-drop, format auto-detect, error report, unresolved-name fixer with autocomplete) — 2026-09-24, `DecksScreen.tsx`; six sample decks import with 0 unresolved
 - [x] Collection view (art-tile grid, search, color-identity/type filters, sort by qty/price/MV; replace/append import with printing-level matching) — `CollectionScreen.tsx`, `data/collection.ts`, `rust/collection.rs`; list view + tag filter UI still open
 - [x] Deck view: curve histogram, color sources vs pips, role coverage vs baseline, legality check — `core/math/deckStats.ts` (19 tests) + `DeckAnalysis.tsx`; commander art hero via `mtimg`
