@@ -10,9 +10,10 @@ use serde::Deserialize;
 
 use crate::error::{msg, Result};
 use crate::import::Part;
+use crate::net::agent;
 use crate::progress::{ProgressSink, Stage};
 
-pub const USER_AGENT: &str = "MagicTrainer/0.1 (github.com/WilliamFischer02/MagicTrainer)";
+pub use crate::net::USER_AGENT;
 pub const SCRYFALL_BULK_INDEX: &str = "https://api.scryfall.com/bulk-data";
 pub const SPELLBOOK_VARIANTS_URL: &str = "https://json.commanderspellbook.com/variants.json.gz";
 
@@ -32,14 +33,6 @@ pub struct BulkEntry {
 #[derive(Debug, Deserialize)]
 struct BulkIndex {
     data: Vec<BulkEntry>,
-}
-
-fn agent() -> ureq::Agent {
-    ureq::Agent::config_builder()
-        .timeout_global(Some(Duration::from_secs(60 * 30)))
-        .user_agent(USER_AGENT)
-        .build()
-        .into()
 }
 
 pub fn list_scryfall_bulk() -> Result<Vec<BulkEntry>> {

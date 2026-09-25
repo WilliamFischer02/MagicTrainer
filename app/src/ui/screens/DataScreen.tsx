@@ -1,8 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { importBulk, onBulkProgress, type BulkImportResult, type BulkPart, type Progress } from "../../bridge/bulk";
 import { Button, Callout, Card, EmptyState, ExternalLink, Page, Spinner, formatBytes, formatCount, formatDate } from "../components";
-import { AlertIcon, CheckIcon, DatabaseIcon, DownloadIcon, FolderIcon } from "../icons";
-import { useAppStore } from "../store";
+import { AlertIcon, CheckIcon, DatabaseIcon, DownloadIcon, FolderIcon, TrashIcon } from "../icons";
+import { invalidateCardData, useClearComboCache, useClearImageCache, useComboCacheStatus, useDbStatus, useImageCacheStatus } from "../queries";
 import s from "./screens.module.css";
 
 type Run = { kind: "idle" } | { kind: "running"; progress: Progress | null; startedAt: number } | { kind: "done"; result: BulkImportResult } | { kind: "error"; message: string };
@@ -23,7 +24,9 @@ const STAGE_LABEL: Record<string, string> = {
 const SCRYFALL_PARTS: BulkPart[] = ["oracle_cards", "printings", "rulings", "oracle_tags"];
 
 export function DataScreen() {
-  const { db, dbError, refreshDb } = useAppStore();
+  const queryClient = useQueryClient();
+  const { data: db, error: dbErr } = useDbStatus();
+  const dbError = dbErr ? (dbErr instanceof Error ? dbErr.message : String(dbErr)) : null;
   const [run, setRun] = useState<Run>({ kind: "idle" });
   const [withCombos, setWithCombos] = useState(false);
   const unlisten = useRef<(() => void) | null>(null);
@@ -54,7 +57,7 @@ export function DataScreen() {
     } catch (e) {
       setRun({ kind: "error", message: e instanceof Error ? e.message : String(e) });
     } finally {
-      await refreshDb();
+      await invalidateCardData(queryClient);
     }
   };
 
@@ -172,8 +175,10 @@ export function DataScreen() {
           )}
         </Card>
 
+        <CacheCard />
+
         <Card title="Sources & credits">
-          <p style={{ color: "var(--ink-2)", fontSize: "var(--fs-2)" }}>
+          <p className={s.lede} style={{ marginBottom: 0 }}>
             Card data and images © Wizards of the Coast, provided by <ExternalLink href="https://scryfall.com">Scryfall</ExternalLink> (oracle text, rulings, community oracle
             tags from Tagger). Combos from <ExternalLink href="https://commanderspellbook.com">Commander Spellbook</ExternalLink>. Comprehensive Rules © Wizards of the Coast.
             MagicTrainer is unofficial Fan Content permitted under the Fan Content Policy.
@@ -181,6 +186,72 @@ export function DataScreen() {
         </Card>
       </div>
     </Page>
+  );
+}
+
+function CacheCard() {
+  const images = useImageCacheStatus();
+  const combos = useComboCacheStatus();
+  const clearImages = useClearImageCache();
+  const clearCombos = useClearComboCache();
+  const err = (e: unknown) => (e instanceof Error ? e.message : String(e));
+  return (
+    <Card title="Caches">
+      <p className={s.lede}>
+        Card images and Commander Spellbook answers are cached on disk so decks open instantly and work offline. Both are safe to clear; they refill on demand.
+      </p>
+      <div className={s.grid2}>
+        <div>
+          <div className={s.statRow}>
+            <span className={s.statKey}>Card images</span>
+            <span className={s.statVal}>{images.data ? `${formatCount(images.data.files)} files · ${formatBytes(images.data.bytes)}` : images.error ? "unavailable" : "…"}</span>
+          </div>
+          <div className={s.statRow}>
+            <span className={s.statKey}>This session</span>
+            <span className={s.statVal}>
+              {images.data ? `${formatCount(images.data.hits)} hits · ${formatCount(images.data.misses)} fetched · ${formatCount(images.data.errors)} failed` : "…"}
+            </span>
+          </div>
+          <div className={s.actions}>
+            <Button size="sm" variant="ghost" onClick={() => clearImages.mutate()} disabled={clearImages.isPending || !images.data || images.data.files === 0}>
+              <TrashIcon /> Clear image cache
+            </Button>
+          </div>
+          {clearImages.isSuccess && <p className={s.path}>Freed {formatBytes(clearImages.data)}.</p>}
+          {clearImages.isError && (
+            <Callout tone="danger" icon={<AlertIcon />}>
+              Could not clear images: {err(clearImages.error)}
+            </Callout>
+          )}
+        </div>
+        <div>
+          <div className={s.statRow}>
+            <span className={s.statKey}>Spellbook lookups</span>
+            <span className={s.statVal}>{combos.data ? `${formatCount(combos.data.files)} ${combos.data.files === 1 ? "deck" : "decks"} · ${formatBytes(combos.data.bytes)}` : combos.error ? "unavailable" : "…"}</span>
+          </div>
+          <div className={s.statRow}>
+            <span className={s.statKey}>Refreshed after</span>
+            <span className={s.statVal}>{combos.data ? `${combos.data.ttlHours} h` : "…"}</span>
+          </div>
+          <div className={s.actions}>
+            <Button size="sm" variant="ghost" onClick={() => clearCombos.mutate()} disabled={clearCombos.isPending || !combos.data || combos.data.files === 0}>
+              <TrashIcon /> Clear combo cache
+            </Button>
+          </div>
+          {clearCombos.isSuccess && <p className={s.path}>Freed {formatBytes(clearCombos.data)}.</p>}
+          {clearCombos.isError && (
+            <Callout tone="danger" icon={<AlertIcon />}>
+              Could not clear combo cache: {err(clearCombos.error)}
+            </Callout>
+          )}
+        </div>
+      </div>
+      {images.data && (
+        <p className={s.path} style={{ marginTop: "var(--s-3)" }}>
+          {images.data.dir}
+        </p>
+      )}
+    </Card>
   );
 }
 

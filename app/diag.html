@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MagicTrainer diagnostics</title>
+    <style>
+      html, body { margin: 0; background: #101418; color: #e9dfc7; font: 13px/1.5 "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; }
+      main { padding: 16px 20px; max-width: 960px; }
+      h1 { font-size: 16px; margin: 0 0 12px; color: #c9a227; }
+      pre { background: rgba(26,32,40,.92); border: 1px solid #2a3340; padding: 10px 12px; border-radius: 6px; white-space: pre-wrap; font-family: Consolas, monospace; }
+      .imgs { display: flex; gap: 12px; margin: 12px 0; }
+      .imgs img { height: 140px; border-radius: 4px; background: #1a2028; }
+      .ok { color: #7fd18a; } .bad { color: #ff7b72; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>MagicTrainer diagnostics — image protocol · Spellbook client</h1>
+      <div class="imgs" id="imgs"></div>
+      <pre id="log">starting…</pre>
+    </main>
+    <script type="module" src="/src/diag/main.ts"></script>
+  </body>
+</html>

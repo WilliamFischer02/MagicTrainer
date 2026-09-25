@@ -112,6 +112,11 @@ export const DatabaseIcon = (p: P) => (
 );
 
 /** Brand mark: a three-point "planar" sigil in gold. */
+export const TrashIcon = (p: P) => (
+  <Base {...p}>
+    <path d="M4 6h12M8.5 9v5M11.5 9v5M5.5 6l.8 10.2a1 1 0 0 0 1 .8h5.4a1 1 0 0 0 1-.8L14.5 6M8 6V4h4v2" />
+  </Base>
+);
 export const Sigil = (p: P) => (
   <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true" {...p}>
     <path d="M14 2.5l11 19.5H3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />

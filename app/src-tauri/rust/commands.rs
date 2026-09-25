@@ -16,20 +16,32 @@ use crate::import::{self, ImportReport, Part};
 use crate::progress::{Progress, ProgressSink};
 
 pub struct AppState {
+    /// Bulk files + the SQLite DB. Local (non-roaming) app data: `%LOCALAPPDATA%\<identifier>`.
     pub data_dir: PathBuf,
+    /// Re-creatable caches (images, Spellbook answers): `%LOCALAPPDATA%\<identifier>\cache`.
+    pub cache_dir: PathBuf,
     pub db_path: PathBuf,
     pub import_lock: Mutex<()>,
 }
 
 impl AppState {
-    /// `MAGICTRAINER_DATA_DIR` overrides the app-data location (dev: point at repo `data/`).
+    /// `MAGICTRAINER_DATA_DIR` overrides the data location (dev: point at repo `data/`);
+    /// `MAGICTRAINER_CACHE_DIR` overrides the cache location (defaults to `<data_dir>/cache`
+    /// when the data dir is overridden, so a dev run never touches the real profile).
     pub fn from_app(app: &AppHandle) -> Result<Self> {
-        let data_dir = match std::env::var_os("MAGICTRAINER_DATA_DIR") {
+        let override_data = std::env::var_os("MAGICTRAINER_DATA_DIR").map(PathBuf::from);
+        let data_dir = match &override_data {
+            Some(p) => p.clone(),
+            None => app.path().app_local_data_dir().map_err(|e| msg(e.to_string()))?,
+        };
+        let cache_dir = match std::env::var_os("MAGICTRAINER_CACHE_DIR") {
             Some(p) => PathBuf::from(p),
-            None => app.path().app_data_dir().map_err(|e| msg(e.to_string()))?,
+            None if override_data.is_some() => data_dir.join("cache"),
+            None => app.path().app_cache_dir().map_err(|e| msg(e.to_string()))?.join("cache"),
         };
         std::fs::create_dir_all(&data_dir)?;
-        Ok(Self { db_path: data_dir.join("magictrainer.sqlite"), data_dir, import_lock: Mutex::new(()) })
+        std::fs::create_dir_all(&cache_dir)?;
+        Ok(Self { db_path: data_dir.join("magictrainer.sqlite"), data_dir, cache_dir, import_lock: Mutex::new(()) })
     }
 }
 
@@ -45,6 +57,7 @@ impl ProgressSink for EventSink {
 pub struct DbStatus {
     pub db_path: String,
     pub data_dir: String,
+    pub cache_dir: String,
     pub exists: bool,
     pub schema_version: Option<String>,
     pub counts: std::collections::BTreeMap<String, i64>,
@@ -56,6 +69,7 @@ pub fn db_status(state: State<'_, AppState>) -> Result<DbStatus> {
     let mut status = DbStatus {
         db_path: state.db_path.display().to_string(),
         data_dir: state.data_dir.display().to_string(),
+        cache_dir: state.cache_dir.display().to_string(),
         exists: state.db_path.is_file(),
         schema_version: None,
         counts: Default::default(),

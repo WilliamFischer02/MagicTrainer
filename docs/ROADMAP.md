@@ -15,13 +15,14 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Rust command: download Scryfall bulk (oracle-cards, rulings, oracle-tags) with progress; stream JSONL.gz → SQLite; schema + migrations; FTS5 name index — `import_bulk` + `magictrainer-import` CLI; 38,690 cards / 236k taggings / 79k rulings in 27 s (debug)
 - [x] Card resolver (exact → normalized → fuzzy with confidence; DFC/split/adventure names) — `core/resolve/`, 51 tests
 - [x] `data/` TS layer (DbClient, card queries with Zod, NameIndex loader, deck resolution) — six sample decks resolve with 0 unresolved
-- [ ] TanStack Query hooks; card image disk cache with Scryfall rate limiting (≤10 rps, User-Agent)
+- [x] TanStack Query hooks; card image disk cache with Scryfall rate limiting (≤10 rps, User-Agent) — `ui/queries.ts`, `mtimg` protocol + `rust/images.rs` (D-012, D-014); verified in WebView2 via `app/diag.html`
 - [x] Commander Spellbook bulk variants import (streaming visitor, D-011)
-- [ ] `find-my-combos` client with on-disk cache (default path per Q-013)
+- [x] `find-my-combos` client with on-disk cache (default path per Q-013) — `rust/spellbook_api.rs` + `core/strategy/spellbook.ts` (D-013), 24 h TTL, stale-on-offline
 - [x] Board rendering spike: PixiJS vs SVG+Motion — D-006 resolved: React DOM + SVG + Motion (both 60 fps at 10× load in WebView2)
 - [x] Design tokens + typography + "arcane table" theme; app shell (nav, mode switch, settings) — `app/src/ui/`, rules viewer + data/settings screens live
 - [ ] Rules viewer: link rule citations in step notes (Phase 3 wiring); glossary cross-links
-- [ ] UI review minors (2026-09-24): fold DataScreen inline token styles into CSS modules; `--measure-*` tokens for 640/860/900 px widths; 2× DPI screenshot pass on a HiDPI display
+- [ ] ESLint + `no-restricted-imports` dependency-direction rule (eslint is not installed; `npm run lint` fails)
+- [ ] UI review minors (2026-09-24): fold DataScreen inline token styles into CSS modules (partly done: `.lede`); `--measure-*` tokens for 640/860/900 px widths; 2× DPI screenshot pass on a HiDPI display
 
 ## Phase 2 — Deck Builder MVP
 - [ ] Import UI (drag-drop, format auto-detect, error report, unresolved-name fixer with autocomplete)

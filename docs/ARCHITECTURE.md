@@ -29,8 +29,9 @@ app/
     data/            # DbClient interface + SQL queries + row→CardOracle mapping (Zod); NameIndex loader
     ui/              # React: screens, HUD, panels, design tokens                          (to do)
     board/           # React board: zones, card elements (art crops), SVG arrow/pulse overlay, timeline (to do)
-    bridge/          # Tauri invoke wrappers: TauriDb (db_query), bulk import + progress events
-  src-tauri/         # Rust crate. Sources in src-tauri/rust/ (NOT src/): normalize, db (schema v1), import/{scryfall,spellbook} streaming, download, commands; bin/import.rs dev CLI
+    bridge/          # Tauri invoke wrappers: TauriDb (db_query), bulk import + progress events, images (mtimg), spellbook (find-my-combos)
+    diag/            # dev-only diagnostics page (/diag.html): proves the image protocol + Spellbook client inside WebView2
+  src-tauri/         # Rust crate. Sources in src-tauri/rust/ (NOT src/): normalize, db (schema v1), import/{scryfall,spellbook} streaming, download, net (UA + rate limiter), images (mtimg protocol cache), spellbook_api (find-my-combos), commands; bin/import.rs dev CLI
 knowledge/           # read-only reference pack (rules, API docs, strategy, dev docs)
 opponent-tracks/     # JSON tracks
 data/                # samples committed; bulk data gitignored
@@ -54,9 +55,9 @@ scripts/             # PowerShell: setup, fetch-data, refresh-rules, launch-agen
 
 ## Performance budgets
 - Cold start ≤ 2 s to interactive (DB opened lazily). Deck import + detection ≤ 300 ms for 100 cards.
-- Board: ≤ 16 ms/frame with 150 card sprites + 40 live arrows. Image cache on disk (`%LOCALAPPDATA%\MagicTrainer\cache\images`).
+- Board: ≤ 16 ms/frame with 150 card sprites + 40 live arrows. Image cache on disk (`%LOCALAPPDATA%\com.goobentertainment.magictrainer\cache\images`, served via the `mtimg` protocol — D-012).
 
 ## Security / capabilities (Tauri)
 Enable only: `fs` (app data + user-picked files via dialog), `dialog`, `http` (scryfall.io, api.scryfall.com,
 cards.scryfall.io, backend.commanderspellbook.com, json.commanderspellbook.com, mtgjson.com), `sql`, `store`, `opener`.
-CSP configured (no `null` in production). See `knowledge/dev-resources/tauri/tauri_security_capabilities.md`.
+CSP configured (no `null` in production; must include `img-src http://mtimg.localhost` for cached card art — D-012). See `knowledge/dev-resources/tauri/tauri_security_capabilities.md`.

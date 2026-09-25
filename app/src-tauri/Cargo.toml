@@ -31,6 +31,7 @@ unicode-normalization = "0.1.25"
 thiserror = "2.0.21"
 ureq = { version = "3.4.2", default-features = false, features = ["rustls"] }
 tauri-plugin-dialog = "2.7.3"
+sha2 = "0.10"
 
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration

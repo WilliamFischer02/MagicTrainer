@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { citation } from "../bridge/rules";
 import { formatCount } from "./components";
 import { BuilderIcon, CloseIcon, CollectionIcon, CopyIcon, DeckIcon, RulesIcon, SettingsIcon, Sigil, TrainerIcon } from "./icons";
@@ -7,6 +6,7 @@ import { DataScreen } from "./screens/DataScreen";
 import { DecksScreen } from "./screens/DecksScreen";
 import { RulesScreen } from "./screens/RulesScreen";
 import s from "./shell.module.css";
+import { useDbStatus } from "./queries";
 import { ROUTES, useAppStore, type Route } from "./store";
 
 const ROUTE_ICON: Record<Route, typeof DeckIcon> = {
@@ -17,10 +17,7 @@ const ROUTE_ICON: Record<Route, typeof DeckIcon> = {
 };
 
 export function AppShell() {
-  const { mode, route, setMode, navigate, refreshDb } = useAppStore();
-  useEffect(() => {
-    void refreshDb();
-  }, [refreshDb]);
+  const { mode, route, setMode, navigate } = useAppStore();
 
   return (
     <div className={s.shell}>
@@ -73,10 +70,11 @@ export function AppShell() {
 }
 
 function DataPill() {
-  const { db, dbError, navigate } = useAppStore();
+  const navigate = useAppStore((st) => st.navigate);
+  const { data: db, error } = useDbStatus();
   let dot = s.dot;
   let text = "Checking card data…";
-  if (dbError) {
+  if (error) {
     dot = `${s.dot} ${s.dotBad}`;
     text = "Card data unavailable";
   } else if (db && !db.exists) {
