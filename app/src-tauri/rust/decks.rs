@@ -71,6 +71,34 @@ fn decode_text(bytes: &[u8]) -> String {
     String::from_utf8_lossy(bytes).into_owned()
 }
 
+const EXPORT_EXTENSIONS: [&str; 3] = ["txt", "dec", "csv"];
+pub const MAX_EXPORT_BYTES: usize = 4 * 1024 * 1024;
+
+/// Write a text export to a user-chosen path (from the save dialog). Only .txt/.dec/.csv, UTF-8, ≤ 4 MB.
+pub fn write_export_path(path: &Path, text: &str) -> Result<u64> {
+    let ext = path.extension().and_then(|e| e.to_str()).map(|e| e.to_ascii_lowercase()).unwrap_or_default();
+    if !EXPORT_EXTENSIONS.contains(&ext.as_str()) {
+        return Err(msg(format!("{} must end in .{}", path.display(), EXPORT_EXTENSIONS.join(", ."))));
+    }
+    if text.len() > MAX_EXPORT_BYTES {
+        return Err(msg("export is too large"));
+    }
+    if let Some(parent) = path.parent() {
+        if !parent.as_os_str().is_empty() && !parent.is_dir() {
+            return Err(msg(format!("folder {} does not exist", parent.display())));
+        }
+    }
+    std::fs::write(path, text.as_bytes())?;
+    Ok(text.len() as u64)
+}
+
+#[tauri::command]
+pub async fn write_text_file(path: String, text: String) -> Result<u64> {
+    tauri::async_runtime::spawn_blocking(move || write_export_path(&PathBuf::from(path), &text))
+        .await
+        .map_err(|e| msg(format!("task panicked: {e}")))?
+}
+
 #[tauri::command]
 pub async fn read_import_file(path: String) -> Result<ImportFile> {
     tauri::async_runtime::spawn_blocking(move || read_import_path(&PathBuf::from(path)))
@@ -268,6 +296,15 @@ mod tests {
         assert_eq!(f.text, "a,b");
         assert_eq!(f.stem, "u16");
         assert_eq!(f.extension, "csv");
+    }
+
+    #[test]
+    fn writes_exports_with_guarded_extensions() {
+        let p = tmp("out.txt");
+        assert_eq!(write_export_path(&p, "1 Sol Ring\n").unwrap(), 11);
+        assert_eq!(std::fs::read_to_string(&p).unwrap(), "1 Sol Ring\n");
+        assert!(write_export_path(&tmp("out.exe"), "x").is_err());
+        assert!(write_export_path(&tmp("nope").join("deep").join("out.txt"), "x").is_err());
     }
 
     #[test]

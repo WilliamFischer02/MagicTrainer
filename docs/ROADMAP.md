@@ -30,7 +30,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 - [x] Deck view: curve histogram, color sources vs pips, role coverage vs baseline, legality check — `core/math/deckStats.ts` (19 tests) + `DeckAnalysis.tsx`; commander art hero via `mtimg`
 - [x] Strategy panel: detected archetypes/combos with rationale + near-miss suggestions (Card Kingdom search link + cheapest-printing price) — `StrategyPanel.tsx`; 14 patterns, golden tests on the six decks pass; "owned first" waits for the collection import
 - [ ] Deck graph (React Flow): cards as nodes, role edges, combo clusters
-- [ ] Export: decklist text (Moxfield/Arena dialects)
+- [x] Export: decklist text (Moxfield/Arena/MTGO dialects) — `core/export/decklist.ts` (round-trip tested), copy + save dialog on the deck hero
 
 ## Phase 3 — Deck Trainer MVP
 - [ ] Board scene: 7 zones per side, card sprites (art crop), zone counters, life/mana HUD

@@ -52,6 +52,7 @@ pub fn run() {
             decks::read_import_file,
             decks::deck_save,
             decks::deck_delete,
+            decks::write_text_file,
             rules::rules_status,
             rules::rules_search,
             rules::rules_get,

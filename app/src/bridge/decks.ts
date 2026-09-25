@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import { open } from "@tauri-apps/plugin-dialog";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import { z } from "zod";
 import type { Deck } from "../core/types";
 
@@ -76,4 +76,12 @@ export async function saveDeck(deck: Deck): Promise<DeckSaved> {
 
 export async function deleteDeck(id: string): Promise<boolean> {
   return z.boolean().parse(await invoke("deck_delete", { id }));
+}
+
+/** Save dialog + Rust write. Resolves to the path written, or null when the user cancelled. */
+export async function saveTextFile(defaultName: string, text: string): Promise<string | null> {
+  const path = await save({ title: "Export decklist", defaultPath: defaultName, filters: [{ name: "Text decklist", extensions: ["txt", "dec"] }] });
+  if (!path) return null;
+  await invoke("write_text_file", { path, text });
+  return path;
 }

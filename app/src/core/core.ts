@@ -6,3 +6,4 @@ export * from "./strategy/spellbook";
 export * from "./trajectory/templates";
 export * from "./import/deckImport";
 export * from "./links";
+export * from "./export/decklist";

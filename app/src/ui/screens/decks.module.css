@@ -699,7 +699,7 @@
 .hero {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: var(--s-4);
   align-items: center;
   padding: var(--s-4);
@@ -755,6 +755,7 @@
 
 .heroActions {
   position: relative;
+  margin-top: var(--s-3);
 }
 
 .identity {
@@ -890,4 +891,32 @@
 .price {
   font-family: var(--font-mono);
   color: var(--gold-2);
+}
+
+/* ---------- export ---------- */
+.exportRow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+
+.selectSm {
+  height: var(--control-h-sm);
+  font-size: var(--fs-2);
+  padding: 0 var(--s-2);
+}
+
+.srOnlyLabel {
+  display: inline-flex;
+}
+
+.exportStatus {
+  min-width: 0;
+  font-size: var(--fs-1);
+  color: var(--ok);
+}
+
+.exportStatusError {
+  color: var(--danger);
 }

@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { onFileDrop, pickImportFiles, readImportFile } from "../../bridge/decks";
+import { onFileDrop, pickImportFiles, readImportFile, saveTextFile } from "../../bridge/decks";
+import { EXPORT_DIALECTS, exportDecklist, exportFileName, type ExportDialect } from "../../core/export/decklist";
 import { FORMATS, deckWarnings, importDeck, type ImportedDeck } from "../../core/import/deckImport";
 import { countCards } from "../../core/parsers/decklist";
 import type { Candidate, NameIndex, Resolution } from "../../core/resolve/resolver";
 import type { Deck, DeckEntry, Format } from "../../core/types";
 import { resolveDeckNames, type DeckResolution, type DeckSummary } from "../../data";
 import { Button, Callout, Card, EmptyState, Page, Spinner, formatCount, formatDate } from "../components";
-import { AlertIcon, ArrowLeftIcon, CheckIcon, ClipboardIcon, DeckIcon, FolderIcon, ImportIcon, SearchIcon, TrashIcon } from "../icons";
+import { AlertIcon, ArrowLeftIcon, CheckIcon, ClipboardIcon, CopyIcon, DeckIcon, DownloadIcon, FolderIcon, ImportIcon, SearchIcon, TrashIcon } from "../icons";
 import { cardImageSrc } from "../../bridge/images";
 import type { Color } from "../../core/types";
 import { useCard, useCardSearch, useDbStatus, useDeck, useDecks, useDeleteDeck, useNameIndex, usePrefetchImages, useSaveDeck } from "../queries";
@@ -297,8 +298,8 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
             {unresolved > 0 && <span className={`${d.chip} ${d.chipWarn}`}>{unresolved} unresolved</span>}
             {summary && unresolved === 0 && <span className={`${d.chip} ${d.chipOk}`}>all cards resolved</span>}
           </div>
-        </div>
         <div className={`${d.row} ${d.heroActions}`}>
+          <ExportControls deck={dk} />
           {confirmDelete ? (
             <>
               <span className={d.muted}>Delete “{dk.name}”?</span>
@@ -322,6 +323,7 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
               <TrashIcon /> Delete
             </Button>
           )}
+        </div>
         </div>
       </div>
       {del.isError && (
@@ -357,6 +359,59 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
         ))}
       </div>
       )}
+    </div>
+  );
+}
+
+type ExportStatus = { kind: "idle" } | { kind: "ok"; message: string } | { kind: "error"; message: string };
+
+/** Copy (Moxfield / Arena / MTGO dialect) or save the decklist as text. Status is announced inline, never in a dialog. */
+function ExportControls({ deck }: { deck: Deck }) {
+  const [dialect, setDialect] = useState<ExportDialect>("moxfield");
+  const [status, setStatus] = useState<ExportStatus>({ kind: "idle" });
+  useEffect(() => {
+    if (status.kind === "idle") return;
+    const t = setTimeout(() => setStatus({ kind: "idle" }), 4000);
+    return () => clearTimeout(t);
+  }, [status]);
+  const text = () => exportDecklist(deck, dialect);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text());
+      setStatus({ kind: "ok", message: "Copied" });
+    } catch (e) {
+      setStatus({ kind: "error", message: `Copy failed: ${e instanceof Error ? e.message : String(e)}` });
+    }
+  };
+  const saveAs = async () => {
+    try {
+      const path = await saveTextFile(exportFileName(deck.name, dialect), text());
+      setStatus(path ? { kind: "ok", message: `Saved ${path.replace(/^.*[\\/]/, "")}` } : { kind: "idle" });
+    } catch (e) {
+      setStatus({ kind: "error", message: `Save failed: ${e instanceof Error ? e.message : String(e)}` });
+    }
+  };
+  return (
+    <div className={d.exportRow}>
+      <label className={d.srOnlyLabel}>
+        <span className="sr-only">Export dialect</span>
+        <select className={`${d.select} ${d.selectSm}`} value={dialect} onChange={(e) => setDialect(e.target.value as ExportDialect)} title={EXPORT_DIALECTS.find((x) => x.id === dialect)?.hint}>
+          {EXPORT_DIALECTS.map((x) => (
+            <option key={x.id} value={x.id}>
+              {x.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <Button size="sm" variant="ghost" onClick={() => void copy()} title="Copy the decklist to the clipboard">
+        <CopyIcon /> Copy
+      </Button>
+      <Button size="sm" variant="ghost" onClick={() => void saveAs()} title="Save the decklist as a .txt file">
+        <DownloadIcon /> Save…
+      </Button>
+      <span className={`${d.exportStatus} ${status.kind === "error" ? d.exportStatusError : ""}`} role="status" aria-live="polite">
+        {status.kind === "idle" ? "" : status.message}
+      </span>
     </div>
   );
 }
