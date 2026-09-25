@@ -6,9 +6,11 @@
 //! - `net`        User-Agent, HTTP agent, rate limiter shared by every outbound path
 //! - `images`     card-image disk cache behind the `mtimg://` custom protocol
 //! - `spellbook_api` Commander Spellbook `find-my-combos` client with a 24 h disk cache
+//! - `collection` collection CSV rows → `collection` table (replace/append/clear)
 //! - `decks`      deck save/delete + import-file reading (writes; reads go through `db_query`)
 //! - `commands`   the Tauri command surface
 
+pub mod collection;
 pub mod commands;
 pub mod db;
 pub mod decks;
@@ -53,6 +55,8 @@ pub fn run() {
             decks::deck_save,
             decks::deck_delete,
             decks::write_text_file,
+            collection::collection_import,
+            collection::collection_clear,
             rules::rules_status,
             rules::rules_search,
             rules::rules_get,

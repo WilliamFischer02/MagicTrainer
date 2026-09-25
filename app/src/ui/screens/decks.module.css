@@ -920,3 +920,7 @@
 .exportStatusError {
   color: var(--danger);
 }
+
+.missingOwned {
+  border-color: var(--ok);
+}

@@ -2,10 +2,25 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/re
 import { dbStatus } from "../bridge/bulk";
 import { tauriDb } from "../bridge/db";
 import { imageCacheClear, imageCacheStatus, imagePrefetch } from "../bridge/images";
+import { clearCollection, importCollectionRows, type ImportMode } from "../bridge/collection";
 import { deleteDeck, saveDeck } from "../bridge/decks";
 import { comboCacheClear, comboCacheStatus, deckToSpellbookRequest, findMyCombos } from "../bridge/spellbook";
 import type { Deck } from "../core/types";
-import { getCardByOracleId, getCardsByOracleIds, getDeck, getRulings, listDecks, loadNameIndex, searchCardNames } from "../data";
+import {
+  collectionSummary,
+  getCardByOracleId,
+  getCardsByOracleIds,
+  getDeck,
+  getRulings,
+  listCollectionCards,
+  listDecks,
+  loadNameIndex,
+  ownedQuantities,
+  searchCardNames,
+  unresolvedCollectionRows,
+  type CollectionFilter,
+  type ResolvedCollectionRow,
+} from "../data";
 
 /**
  * TanStack Query layer over `src/data` (SQL) and `src/bridge` (Tauri commands).
@@ -38,7 +53,55 @@ export const keys = {
   combos: (key: string) => ["combos", key] as const,
   decks: ["decks"] as const,
   deck: (id: string) => ["decks", "one", id] as const,
+  collection: ["collection"] as const,
+  collectionSummary: ["collection", "summary"] as const,
+  collectionCards: (f: CollectionFilter) => ["collection", "cards", f] as const,
+  collectionUnresolved: ["collection", "unresolved"] as const,
+  owned: (ids: readonly string[]) => ["collection", "owned", [...ids].sort().join("|")] as const,
 };
+
+// ---- collection ------------------------------------------------------------------------
+
+export function useCollectionSummary() {
+  return useQuery({ queryKey: keys.collectionSummary, queryFn: () => collectionSummary(tauriDb), staleTime: 60 * 1000 });
+}
+
+export function useCollectionCards(filter: CollectionFilter, enabled = true) {
+  return useQuery({
+    queryKey: keys.collectionCards(filter),
+    queryFn: () => listCollectionCards(tauriDb, filter),
+    enabled,
+    staleTime: 60 * 1000,
+    placeholderData: (prev) => prev,
+  });
+}
+
+export function useCollectionUnresolved(enabled = true) {
+  return useQuery({ queryKey: keys.collectionUnresolved, queryFn: () => unresolvedCollectionRows(tauriDb), enabled, staleTime: 60 * 1000 });
+}
+
+/** Owned quantity per oracle id; empty map while loading. */
+export function useOwned(oracleIds: readonly string[]) {
+  return useQuery({
+    queryKey: keys.owned(oracleIds),
+    queryFn: () => ownedQuantities(tauriDb, oracleIds),
+    enabled: oracleIds.length > 0,
+    staleTime: 60 * 1000,
+  });
+}
+
+export function useImportCollection() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { rows: readonly ResolvedCollectionRow[]; sourceFormat: string; mode: ImportMode }) => importCollectionRows(args.rows, args.sourceFormat, args.mode),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.collection }),
+  });
+}
+
+export function useClearCollection() {
+  const client = useQueryClient();
+  return useMutation({ mutationFn: clearCollection, onSuccess: () => client.invalidateQueries({ queryKey: keys.collection }) });
+}
 
 // ---- decks ---------------------------------------------------------------------------
 

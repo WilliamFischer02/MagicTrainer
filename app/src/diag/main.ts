@@ -77,6 +77,31 @@ async function main() {
   const tauri = "__TAURI_INTERNALS__" in window;
   const failures: string[] = [];
   say(`tauri: ${tauri}`);
+  // `?seedCollection=<csv path>` — import a collection CSV through the real pipeline and keep it.
+  const seedCollection = q.get("seedCollection");
+  if (seedCollection && tauri) {
+    const { readImportFile } = await import("../bridge/decks");
+    const { importCollection } = await import("../core/import/collectionImport");
+    const { tauriDb } = await import("../bridge/db");
+    const { loadNameIndex } = await import("../data/nameIndex");
+    const { resolveCollection, collectionSummary } = await import("../data/collection");
+    const { importCollectionRows } = await import("../bridge/collection");
+    const file = await readImportFile(seedCollection);
+    const imported = importCollection(file.text, { fileName: file.fileName });
+    const index = await loadNameIndex(tauriDb);
+    const rows = await resolveCollection(tauriDb, index, imported.entries);
+    const result = await importCollectionRows(rows, imported.format, "replace");
+    const summary = await collectionSummary(tauriDb);
+    const report = { seededCollection: { file: file.fileName, format: imported.format, rows: rows.length, unresolved: rows.filter((r) => r.method === "unresolved").length, result, summary }, passed: true, failures: [] };
+    say(JSON.stringify(report.seededCollection));
+    const collectorUrl = q.get("collector");
+    if (collectorUrl) await fetch(collectorUrl, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(report) }).catch(() => undefined);
+    if (q.get("autoclose") === "1") {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      await getCurrentWindow().close();
+    }
+    return;
+  }
   const seed = q.get("seed");
   if (seed && tauri) {
     const seeded = await seedDecks(seed, q);

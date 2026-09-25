@@ -26,7 +26,7 @@ Phases are checklists. The agent updates this file at the end of every session (
 
 ## Phase 2 — Deck Builder MVP
 - [x] Import UI (drag-drop, format auto-detect, error report, unresolved-name fixer with autocomplete) — 2026-09-24, `DecksScreen.tsx`; six sample decks import with 0 unresolved
-- [ ] Collection view (grid/list, search, filters by color/type/tag/owned qty)
+- [x] Collection view (art-tile grid, search, color-identity/type filters, sort by qty/price/MV; replace/append import with printing-level matching) — `CollectionScreen.tsx`, `data/collection.ts`, `rust/collection.rs`; list view + tag filter UI still open
 - [x] Deck view: curve histogram, color sources vs pips, role coverage vs baseline, legality check — `core/math/deckStats.ts` (19 tests) + `DeckAnalysis.tsx`; commander art hero via `mtimg`
 - [x] Strategy panel: detected archetypes/combos with rationale + near-miss suggestions (Card Kingdom search link + cheapest-printing price) — `StrategyPanel.tsx`; 14 patterns, golden tests on the six decks pass; "owned first" waits for the collection import
 - [ ] Deck graph (React Flow): cards as nodes, role edges, combo clusters

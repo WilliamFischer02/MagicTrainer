@@ -6,7 +6,7 @@ import { cardKingdomSearchUrl, displayPrice, formatUsd } from "../../core/links"
 import type { CardOracle, Deck, StrategyMatch } from "../../core/types";
 import { Button, Callout, Card, ExternalLink, Spinner } from "../components";
 import { AlertIcon } from "../icons";
-import { useCards, useDeckCombos, useNameIndex } from "../queries";
+import { useCards, useDeckCombos, useNameIndex, useOwned } from "../queries";
 import d from "./decks.module.css";
 import s from "./screens.module.css";
 
@@ -140,14 +140,21 @@ function NearMissList({ items }: { items: NearMissCombo[] }) {
   const missingNames = useMemo(() => [...new Set(items.flatMap((n) => n.missing))], [items]);
   const missingIds = useMemo(() => (index.data ? missingNames.map((n) => index.data!.resolve(n).oracleId).filter((x): x is string => !!x) : []), [index.data, missingNames]);
   const priced = useCards(missingIds);
+  const owned = useOwned(missingIds);
   const byName = useMemo(() => {
     const m = new Map<string, CardOracle>();
     for (const c of priced.data?.values() ?? []) m.set(c.name.toLowerCase(), c);
     return m;
   }, [priced.data]);
+  // "Owned first": near misses whose missing cards you already have float to the top.
+  const ordered = useMemo(() => {
+    if (!owned.data || owned.data.size === 0) return items;
+    const ownedCount = (n: NearMissCombo) => n.missing.filter((name) => (owned.data!.get(byName.get(name.toLowerCase())?.oracleId ?? "") ?? 0) > 0).length;
+    return [...items].sort((a, b) => ownedCount(b) - ownedCount(a));
+  }, [items, owned.data, byName]);
   return (
     <ul className={d.matchList}>
-      {items.map((n) => (
+      {ordered.map((n) => (
         <li key={n.variant.id} className={d.match}>
           <div className={d.matchHead}>
             <span className={d.matchLabel}>{n.match.label}</span>
@@ -158,9 +165,11 @@ function NearMissList({ items }: { items: NearMissCombo[] }) {
             {n.missing.map((name) => {
               const card = byName.get(name.toLowerCase());
               const usd = displayPrice(card?.prices);
+              const have = card ? (owned.data?.get(card.oracleId) ?? 0) : 0;
               return (
-                <span key={name} className={d.missingCard}>
+                <span key={name} className={`${d.missingCard} ${have > 0 ? d.missingOwned : ""}`}>
                   <strong>{name}</strong>
+                  {have > 0 && <span className={`${d.chip} ${d.chipOk}`}>you own {have}</span>}
                   {usd !== undefined && (
                     <span className={d.price} title="Cheapest printing, TCGplayer market via Scryfall">
                       {formatUsd(usd)}
