@@ -1,0 +1,200 @@
+/* ---------- Deck graph (React Flow) ---------- */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  font-size: var(--fs-1);
+  color: var(--ink-3);
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.legendNote {
+  color: var(--ink-3);
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-left: var(--s-2);
+}
+
+.swatchRole {
+  background: var(--gold);
+}
+
+.swatchCombo {
+  background: var(--info);
+}
+
+.hubControl {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.hubControl select {
+  height: var(--control-h-sm);
+  padding: 0 var(--s-2);
+  border-radius: var(--r-1);
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: var(--fs-1);
+}
+
+.canvas {
+  height: 560px;
+  min-height: 360px;
+  border-radius: var(--r-3);
+  border: 1px solid var(--line);
+  background: var(--felt-2);
+  overflow: hidden;
+}
+
+/* React Flow theming through tokens (colorMode="dark" sets its own vars; override the surfaces). */
+.canvas :global(.react-flow) {
+  --xy-background-color: var(--felt-2);
+  --xy-background-pattern-color: rgba(233, 223, 199, 0.12);
+  --xy-controls-button-background-color: var(--panel);
+  --xy-controls-button-background-color-hover: var(--panel-2);
+  --xy-controls-button-color: var(--ink-2);
+  --xy-controls-button-border-color: var(--line);
+  --xy-edge-stroke: var(--line-strong);
+  --xy-edge-stroke-width: 1.5;
+  --xy-edge-stroke-selected: var(--gold-2);
+  font-family: var(--font-ui);
+}
+
+.canvas :global(.react-flow__attribution) {
+  display: none;
+}
+
+.canvas :global(.react-flow__edge.edgeRole .react-flow__edge-path),
+.edgeRole :global(.react-flow__edge-path) {
+  stroke: var(--gold-line);
+}
+
+.canvas :global(.react-flow__edge.edgeCombo .react-flow__edge-path),
+.edgeCombo :global(.react-flow__edge-path) {
+  stroke: var(--info);
+  stroke-width: 2;
+}
+
+.handle {
+  opacity: 0;
+  width: 6px;
+  height: 6px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.cardNode {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-2);
+  padding-right: var(--s-2);
+  border-radius: var(--r-2);
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--ink);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.cardNode:hover {
+  border-color: var(--gold-line);
+}
+
+.cardArt {
+  width: 44px;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cardArtEmpty {
+  width: 44px;
+  height: 100%;
+  background: var(--panel-3);
+}
+
+.cardName {
+  font-size: var(--fs-1);
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.cardQty {
+  font-family: var(--font-mono);
+  font-size: var(--fs-1);
+  color: var(--ink-3);
+}
+
+.hub {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 150px;
+  max-width: 220px;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-pill);
+  border: 1px solid;
+  color: var(--ink);
+  box-shadow: var(--shadow-2);
+  text-align: center;
+  align-items: center;
+}
+
+.hubRole {
+  background: var(--gold-soft);
+  border-color: var(--gold);
+}
+
+.hubCombo {
+  background: rgba(91, 155, 213, 0.16);
+  border-color: var(--info);
+}
+
+.hubKind {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.hubLabel {
+  font-size: var(--fs-2);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.hubMeta {
+  font-size: var(--fs-1);
+  color: var(--ink-3);
+}
+
+.credit {
+  margin: 0;
+  font-size: var(--fs-1);
+  color: var(--ink-3);
+}

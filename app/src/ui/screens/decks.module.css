@@ -924,3 +924,32 @@
 .missingOwned {
   border-color: var(--ok);
 }
+
+/* ---------- view switch ---------- */
+.viewSwitch {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 3px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.viewTab {
+  height: var(--control-h-sm);
+  padding: 0 var(--s-4);
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+  font-size: var(--fs-2);
+  font-weight: 600;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+
+.viewTab:hover {
+  color: var(--ink);
+}
+
+.viewTab[aria-selected="true"] {
+  background: var(--gold);
+  color: var(--ink-on-gold);
+}

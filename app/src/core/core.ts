@@ -8,3 +8,4 @@ export * from "./import/deckImport";
 export * from "./import/collectionImport";
 export * from "./links";
 export * from "./export/decklist";
+export * from "./graph/deckGraph";

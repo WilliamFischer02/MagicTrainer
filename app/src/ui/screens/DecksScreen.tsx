@@ -10,9 +10,10 @@ import { Button, Callout, Card, EmptyState, Page, Spinner, formatCount, formatDa
 import { AlertIcon, ArrowLeftIcon, CheckIcon, ClipboardIcon, CopyIcon, DeckIcon, DownloadIcon, FolderIcon, ImportIcon, SearchIcon, TrashIcon } from "../icons";
 import { cardImageSrc } from "../../bridge/images";
 import type { Color } from "../../core/types";
-import { useCard, useCardSearch, useDbStatus, useDeck, useDecks, useDeleteDeck, useNameIndex, usePrefetchImages, useSaveDeck } from "../queries";
+import { useCard, useCardSearch, useCards, useDbStatus, useDeck, useDecks, useDeleteDeck, useNameIndex, usePrefetchImages, useSaveDeck } from "../queries";
 import { useAppStore } from "../store";
 import { DeckAnalysis } from "./DeckAnalysis";
+import { DeckGraph } from "./DeckGraph";
 import d from "./decks.module.css";
 import s from "./screens.module.css";
 
@@ -235,6 +236,7 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
   const selectDeck = useAppStore((st) => st.selectDeck);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showList, setShowList] = useState(false);
+  const [view, setView] = useState<"analysis" | "graph">(() => (new URLSearchParams(globalThis.location?.search ?? "").get("view") === "graph" ? "graph" : "analysis"));
   useEffect(() => setConfirmDelete(false), [id]);
   const commanderId = deck.data?.commanders[0]?.oracleId;
   const commander = useCard(commanderId);
@@ -331,7 +333,15 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
           Could not delete: {del.error instanceof Error ? del.error.message : String(del.error)}
         </Callout>
       )}
-      <DeckAnalysis deck={dk} />
+      <div className={d.viewSwitch} role="tablist" aria-label="Deck view">
+        <button type="button" role="tab" aria-selected={view === "analysis"} className={d.viewTab} onClick={() => setView("analysis")}>
+          Analysis
+        </button>
+        <button type="button" role="tab" aria-selected={view === "graph"} className={d.viewTab} onClick={() => setView("graph")}>
+          Graph
+        </button>
+      </div>
+      {view === "analysis" ? <DeckAnalysis deck={dk} /> : <DeckGraphPane deck={dk} />}
       <Button size="sm" variant="ghost" className={d.entriesToggle} onClick={() => setShowList((v) => !v)} aria-expanded={showList}>
         {showList ? "Hide decklist" : "Show decklist"}
       </Button>
@@ -361,6 +371,27 @@ function DeckDetail({ id, summary }: { id: string; summary: DeckSummary | undefi
       )}
     </div>
   );
+}
+
+/** Loads the deck's cards once and hands them to the graph (same query the analysis uses). */
+function DeckGraphPane({ deck }: { deck: Deck }) {
+  const ids = useMemo(() => [...deck.commanders, ...deck.main].map((e) => e.oracleId).filter((x): x is string => !!x), [deck]);
+  const cards = useCards(ids);
+  if (cards.isPending) {
+    return (
+      <div className={s.state} role="status" style={{ marginTop: 0 }}>
+        <Spinner /> Loading cards…
+      </div>
+    );
+  }
+  if (cards.error || !cards.data) {
+    return (
+      <Callout tone="danger" icon={<AlertIcon />}>
+        Could not load card data{cards.error ? `: ${cards.error instanceof Error ? cards.error.message : String(cards.error)}` : ""}.
+      </Callout>
+    );
+  }
+  return <DeckGraph deck={deck} cards={cards.data} />;
 }
 
 type ExportStatus = { kind: "idle" } | { kind: "ok"; message: string } | { kind: "error"; message: string };
